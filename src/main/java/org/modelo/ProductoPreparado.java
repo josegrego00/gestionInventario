@@ -13,6 +13,11 @@ public class ProductoPreparado {
     public ProductoPreparado() {
     }
 
+    public ProductoPreparado(String nombre, Receta receta) {
+        this.nombre = nombre;
+        this.receta = receta;
+    }
+
     public ProductoPreparado(int id, String nombre, double precio, Receta receta, int cantidadDisponible, String categoria) {
         this.id = id;
         this.nombre = nombre;

@@ -5,6 +5,7 @@ import org.controllador.repositorio.ProductoCompradoRepositorio;
 import org.controllador.repositorio.RecetaRepositorio;
 import org.modelo.Ingrediente;
 import org.modelo.ProductoComprado;
+import org.modelo.ProductoPreparado;
 import org.modelo.Receta;
 
 import java.util.ArrayList;
@@ -14,10 +15,20 @@ public class Main {
     public static void main(String[] args) {
 
 
-        RecetaRepositorio rs = new RecetaRepositorio();
-        rs.agregarIngredienteAReceta(12, new Ingrediente("matas", 10.5));
-        System.out.println(rs.listar());
+    ProductoCompradoRepositorio pcr= new ProductoCompradoRepositorio();
+    pcr.crear(new ProductoPreparado());
 
+
+/*
+        RecetaRepositorio rs = new RecetaRepositorio();
+        //rs.agregarIngredienteAReceta(13, new Ingrediente("matas", 10.5));
+        //rs.agregarIngredienteAReceta(13, new Ingrediente("Lechuga", 12.5));
+        System.out.println(rs.buscarPorID(13));
+        System.out.println("===============");
+        rs.modificarIngredienteEnReceta(13,new Ingrediente("matas", 100.10));
+        rs.modificarIngredienteEnReceta(13,new Ingrediente("Lechuga", 100.10));
+        System.out.println(rs.buscarPorID(13));
+        */
         /*RecetaRepositorio rs = new RecetaRepositorio();
         rs.eliminarPorID(6);
         System.out.println(rs.listar());

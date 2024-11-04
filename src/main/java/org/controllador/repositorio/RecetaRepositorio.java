@@ -109,6 +109,37 @@ public class RecetaRepositorio implements Repositorio<Receta> {
         }
         return receta;
     }
+    public Receta buscarPorNombre(String nombre) {
+        Receta receta = null; // Inicializa la receta como null
+        String sql ="SELECT rn.id AS idreceta, rn.nombre AS nombrereceta," +
+                " i.nombre AS nombreingrediente, rd.cantidadingrediente " +
+                "FROM recetanombre rn INNER JOIN recetadetalle rd " +
+                "ON rn.id = rd.idreceta INNER JOIN ingrediente i " +
+                "ON rd.idingrediente = i.id WHERE rn.nombre =?";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, nombre);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) { // Verifica si hay resultados
+                receta = new Receta(rs.getString("nombre")); // Crea la receta
+                do {
+                    // Crear el ingrediente y añadirlo a la receta
+                    Ingrediente ingrediente = new Ingrediente(
+                            rs.getString("nombreingrediente"),
+                            rs.getDouble("cantidadingrediente")
+                    );
+                    receta.agregarIngrediente(ingrediente); // Añadir ingrediente a la receta
+                } while (rs.next()); // Continuar para obtener otros ingredientes
+            } else {
+                System.out.println("No se encontró la receta con el nombre: " + nombre);
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error al buscar la receta: " + e.getMessage());
+        }
+
+        return receta; // Retorna la receta encontrada o null si no se encontró
+    }
 
     @Override
     public List<Receta> listar() {
@@ -220,7 +251,58 @@ public class RecetaRepositorio implements Repositorio<Receta> {
             JOptionPane.showMessageDialog(null, "Error al agregar el ingrediente a la receta.");
         }
     }
+        public void eliminarIngredienteDeReceta(int recetaId, int ingredienteId) {
+
+            String sql = "DELETE FROM recetadetalle WHERE idreceta = ? AND idingrediente = ?";
+
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, recetaId);
+                stmt.setInt(2, ingredienteId);
+
+                int filasEliminadas = stmt.executeUpdate();  // Ejecuta la eliminación
+
+                if (filasEliminadas > 0) {
+
+                    System.out.println("Ingrediente eliminado de la receta con éxito.");
+
+                } else {
+
+                    System.out.println("No se encontró la relación entre receta e ingrediente especificada.");
+                }
+            } catch (SQLException e) {
+                System.out.println("Error al eliminar el ingrediente de la receta: " + e.getMessage());
+                JOptionPane.showMessageDialog(null, "Error al eliminar el ingrediente de la receta.");
+            }
+        }
+    public void modificarIngredienteEnReceta(int recetaId, Ingrediente ingredienteModificado) {
+        // Verificar si el ingrediente existe en la base de datos
+        Ingrediente ingredienteExistente = ir.buscarPorNombre(ingredienteModificado.getNombre());
+
+        if (ingredienteExistente == null) {
+            System.out.println("Error: El ingrediente " + ingredienteModificado.getNombre() + " no existe en la base de datos.");
+            return;
+        }
+
+        // Preparar la sentencia SQL para actualizar la cantidad del ingrediente en la receta
+        String sql = "UPDATE recetadetalle SET cantidadingrediente = ? WHERE idreceta = ? AND idingrediente = ?";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setDouble(1, ingredienteModificado.getCantidad());  // Nueva cantidad del ingrediente
+            stmt.setInt(2, recetaId);                                // ID de la receta
+            stmt.setInt(3, ingredienteExistente.getId());            // ID del ingrediente
+
+            int filasActualizadas = stmt.executeUpdate();  // Ejecuta la actualización
+
+            if (filasActualizadas > 0) {
+                System.out.println("Ingrediente modificado con éxito en la receta.");
+            } else {
+                System.out.println("No se encontró la relación entre receta e ingrediente especificada.");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al modificar el ingrediente en la receta: " + e.getMessage());
+            JOptionPane.showMessageDialog(null, "Error al modificar el ingrediente en la receta.");
+        }
+    }
+    }
 
 
-
-}
