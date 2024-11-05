@@ -13,6 +13,10 @@ public class ProductoPreparado {
     public ProductoPreparado() {
     }
 
+    public ProductoPreparado(String nombre) {
+        this.nombre = nombre;
+    }
+
     public ProductoPreparado(String nombre, Receta receta) {
         this.nombre = nombre;
         this.receta = receta;
@@ -90,13 +94,23 @@ public class ProductoPreparado {
 
     @Override
     public String toString() {
-        return "ProductoPreparado{" +
-                "id=" + id +
-                ", nombre='" + nombre + '\'' +
-                ", precio=" + precio +
-                ", receta=" + receta +
-                ", cantidadDisponible=" + cantidadDisponible +
-                ", categoria='" + categoria + '\'' +
-                '}';
+        StringBuilder sb = new StringBuilder();
+        sb.append("Producto Preparado:\n");
+        sb.append("Nombre del producto: ").append(nombre).append("\n");
+        sb.append("Precio: ").append(precio).append("\n");
+
+        if (receta != null) {
+            sb.append("Receta:\n");
+            sb.append("   Nombre de la receta: ").append(receta.getNombreReceta()).append("\n");
+            sb.append("   Ingredientes:\n");
+            sb.append(receta.toString()); // Llama al toString de Receta
+        } else {
+            sb.append("Receta: No hay receta asignada.\n");
+        }
+
+        sb.append("Cantidad Disponible: ").append(cantidadDisponible).append("\n");
+        sb.append("Categoría: ").append(categoria != null ? categoria : "Sin categoría").append("\n");
+
+        return sb.toString();
     }
 }

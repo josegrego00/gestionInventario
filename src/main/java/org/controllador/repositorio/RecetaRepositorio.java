@@ -63,7 +63,7 @@ public class RecetaRepositorio implements Repositorio<Receta> {
                     } catch (SQLException e) {
                         System.out.println(e.getMessage());
                     }
-                }else{
+                } else {
                     System.out.println("Se Agrego la Receta sin Ingredientes");
                 }
 
@@ -77,20 +77,22 @@ public class RecetaRepositorio implements Repositorio<Receta> {
 
     @Override
     public Receta buscarPorID(int i) {
-        String sql = "SELECT rn.id AS receta_id, rn.nombre AS nombre, i.nombre AS ingrediente_nombre, rd.cantidadingrediente "+
-        "FROM recetanombre rn "+
-        "INNER JOIN recetadetalle rd ON rn.id = rd.idreceta "+
-        "INNER JOIN ingrediente i ON rd.idingrediente = i.id "+
-        "WHERE rn.id = ?";
-        Receta receta= null;
+        String sql = "SELECT rn.id AS receta_id, rn.nombre AS nombreR, i.nombre AS ingrediente_nombre, rd.cantidadingrediente " +
+                "FROM recetanombre rn " +
+                "INNER JOIN recetadetalle rd ON rn.id = rd.idreceta " +
+                "INNER JOIN ingrediente i ON rd.idingrediente = i.id " +
+                "WHERE rn.id = ?";
+        Receta receta = new Receta();
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, i);
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                if (receta == null) {
+
+                if (receta != null) {
                     // Solo se crea la receta la primera vez que encontramos un resultado
-                    receta = new Receta(rs.getString("nombre"));
+                    receta.setNombreReceta(rs.getString("nombreR"));
+                    receta.setId(i);
                 }
                 // Crear un ingrediente y añadirlo a la receta
                 Ingrediente ingrediente = new Ingrediente(
@@ -98,6 +100,7 @@ public class RecetaRepositorio implements Repositorio<Receta> {
                         rs.getDouble("cantidadingrediente")
                 );
                 receta.agregarIngrediente(ingrediente);
+
             }
 
             if (receta == null) {
@@ -109,9 +112,10 @@ public class RecetaRepositorio implements Repositorio<Receta> {
         }
         return receta;
     }
+
     public Receta buscarPorNombre(String nombre) {
         Receta receta = null; // Inicializa la receta como null
-        String sql ="SELECT rn.id AS idreceta, rn.nombre AS nombrereceta," +
+        String sql = "SELECT rn.id AS idreceta, rn.nombre AS nombrereceta," +
                 " i.nombre AS nombreingrediente, rd.cantidadingrediente " +
                 "FROM recetanombre rn INNER JOIN recetadetalle rd " +
                 "ON rn.id = rd.idreceta INNER JOIN ingrediente i " +
@@ -225,6 +229,7 @@ public class RecetaRepositorio implements Repositorio<Receta> {
         }
 
     }
+
     public void agregarIngredienteAReceta(int recetaId, Ingrediente ingrediente) {
         // Verificar si el ingrediente existe en la base de datos
         Ingrediente ingredienteExistente = ir.buscarPorNombre(ingrediente.getNombre());
@@ -251,29 +256,31 @@ public class RecetaRepositorio implements Repositorio<Receta> {
             JOptionPane.showMessageDialog(null, "Error al agregar el ingrediente a la receta.");
         }
     }
-        public void eliminarIngredienteDeReceta(int recetaId, int ingredienteId) {
 
-            String sql = "DELETE FROM recetadetalle WHERE idreceta = ? AND idingrediente = ?";
+    public void eliminarIngredienteDeReceta(int recetaId, int ingredienteId) {
 
-            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setInt(1, recetaId);
-                stmt.setInt(2, ingredienteId);
+        String sql = "DELETE FROM recetadetalle WHERE idreceta = ? AND idingrediente = ?";
 
-                int filasEliminadas = stmt.executeUpdate();  // Ejecuta la eliminación
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, recetaId);
+            stmt.setInt(2, ingredienteId);
 
-                if (filasEliminadas > 0) {
+            int filasEliminadas = stmt.executeUpdate();  // Ejecuta la eliminación
 
-                    System.out.println("Ingrediente eliminado de la receta con éxito.");
+            if (filasEliminadas > 0) {
 
-                } else {
+                System.out.println("Ingrediente eliminado de la receta con éxito.");
 
-                    System.out.println("No se encontró la relación entre receta e ingrediente especificada.");
-                }
-            } catch (SQLException e) {
-                System.out.println("Error al eliminar el ingrediente de la receta: " + e.getMessage());
-                JOptionPane.showMessageDialog(null, "Error al eliminar el ingrediente de la receta.");
+            } else {
+
+                System.out.println("No se encontró la relación entre receta e ingrediente especificada.");
             }
+        } catch (SQLException e) {
+            System.out.println("Error al eliminar el ingrediente de la receta: " + e.getMessage());
+            JOptionPane.showMessageDialog(null, "Error al eliminar el ingrediente de la receta.");
         }
+    }
+
     public void modificarIngredienteEnReceta(int recetaId, Ingrediente ingredienteModificado) {
         // Verificar si el ingrediente existe en la base de datos
         Ingrediente ingredienteExistente = ir.buscarPorNombre(ingredienteModificado.getNombre());
@@ -303,6 +310,6 @@ public class RecetaRepositorio implements Repositorio<Receta> {
             JOptionPane.showMessageDialog(null, "Error al modificar el ingrediente en la receta.");
         }
     }
-    }
+}
 
 

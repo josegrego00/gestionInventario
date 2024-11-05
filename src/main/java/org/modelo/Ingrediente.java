@@ -65,10 +65,8 @@ public class Ingrediente {
 
     @Override
     public String toString() {
-        return "Ingrediente:" +"\n"+
-                "\t"+"Nombre = " + nombre + "\n" +
-                "\t"+"Precio = " + precio + "\n" +
-                "\t"+"Cantidad = " + cantidad + "\n" +
-                "\t"+"Medida = " + medida + "\n";
+        return "\tIngrediente: " + nombre + "\n" +
+                "\tCantidad: " + cantidad + "\n";
+
     }
 }

@@ -11,6 +11,7 @@ public class Receta {
     private List<Ingrediente> listaIngrediente;
 
     public Receta() {
+        this.listaIngrediente = new ArrayList<>();
     }
 
     public Receta(String nombreReceta) {
@@ -43,12 +44,19 @@ public class Receta {
         this.nombreReceta = nombreReceta;
     }
 
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("Receta: ").append(nombreReceta).append("\n");
-        for (Ingrediente ingrediente : listaIngrediente) {
-            sb.append("- ").append(ingrediente.toString()).append("\n");
+        sb.append("Ingredientes:\n");
+
+        if (listaIngrediente != null && !listaIngrediente.isEmpty()) {
+            for (Ingrediente ingrediente : listaIngrediente) {
+                sb.append(ingrediente.toString()); // Llama al toString de Ingrediente
+            }
+        } else {
+            sb.append("No hay ingredientes.\n");
         }
 
         return sb.toString();

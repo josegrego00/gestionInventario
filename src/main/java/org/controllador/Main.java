@@ -2,6 +2,7 @@ package org.controllador;
 
 import org.controllador.repositorio.IngredienteRepositorio;
 import org.controllador.repositorio.ProductoCompradoRepositorio;
+import org.controllador.repositorio.ProductoPreparadoRepositorio;
 import org.controllador.repositorio.RecetaRepositorio;
 import org.modelo.Ingrediente;
 import org.modelo.ProductoComprado;
@@ -14,10 +15,10 @@ import java.util.List;
 public class Main {
     public static void main(String[] args) {
 
+    RecetaRepositorio rr= new RecetaRepositorio();
+    ProductoPreparadoRepositorio pcr= new ProductoPreparadoRepositorio();
 
-    ProductoCompradoRepositorio pcr= new ProductoCompradoRepositorio();
-    pcr.crear(new ProductoPreparado());
-
+    System.out.println(pcr.buscarPorID(3));
 
 /*
         RecetaRepositorio rs = new RecetaRepositorio();
