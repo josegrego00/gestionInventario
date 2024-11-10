@@ -15,10 +15,10 @@ import java.util.List;
 public class Main {
     public static void main(String[] args) {
 
-    RecetaRepositorio rr= new RecetaRepositorio();
+
     ProductoPreparadoRepositorio pcr= new ProductoPreparadoRepositorio();
 
-    System.out.println(pcr.buscarPorID(3));
+        System.out.println(pcr.listar());
 
 /*
         RecetaRepositorio rs = new RecetaRepositorio();
