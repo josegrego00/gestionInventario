@@ -16,10 +16,12 @@ import java.util.Map;
 public class ProductoPreparadoRepositorio implements Repositorio<ProductoPreparado> {
     private Connection conn;
     private RecetaRepositorio recetaR;
+    private IngredienteRepositorio ingredienteRepositorio;
 
     public ProductoPreparadoRepositorio() {
         this.conn = CBaseDatos.getConnection();
         recetaR = new RecetaRepositorio();
+        ingredienteRepositorio= new IngredienteRepositorio();
     }
 
     @Override
@@ -64,60 +66,47 @@ public class ProductoPreparadoRepositorio implements Repositorio<ProductoPrepara
 
     @Override
     public List listar() {
-        List<ProductoPreparado> listarProductosPreparados = new ArrayList<>();
-        String sql = """
-                SELECT pp.id AS productoPid, 
-                       pp.nombre AS nombre, 
-                       r.id AS receta_id, 
-                       r.nombre AS nombre_receta, 
-                       i.nombre AS ingrediente_nombre, 
-                       rd.cantidadingrediente 
-                FROM productopreparado pp
-                INNER JOIN receta r ON pp.idreceta = r.id
-                INNER JOIN recetadetalle rd ON r.id = rd.idreceta
-                INNER JOIN ingrediente i ON rd.idingrediente = i.id
-                ORDER BY pp.id;
-                """;
-
-        Map<Integer, ProductoPreparado> productoMap = new HashMap<>();
+        List<ProductoPreparado> listaProductosPreparados = new ArrayList<>();
+        String sql = "SELECT pp.id AS producto_id, pp.nombre AS producto_nombre, r.id AS receta_id, r.nombre AS receta_nombre " +
+                "FROM productopreparado pp " +
+                "JOIN recetanombre r ON pp.idreceta = r.id";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                int productoId = rs.getInt("productoPid");
+                int productoId = rs.getInt("producto_id");
+                String productoNombre = rs.getString("producto_nombre");
+                int recetaId = rs.getInt("receta_id");
+                String recetaNombre = rs.getString("receta_nombre");
 
-                // Verificar si el producto ya está en el mapa
-                ProductoPreparado productoPreparado = productoMap.get(productoId);
-                if (productoPreparado == null) {
-                    // Si no está, crear el producto y agregarlo al mapa
-                    productoPreparado = new ProductoPreparado();
-                    productoPreparado.setId(productoId);
-                    productoPreparado.setNombre(rs.getString("nombre"));
+                // Crear el producto preparado
+                ProductoPreparado productoPreparado = new ProductoPreparado();
+                productoPreparado.setId(productoId);
+                productoPreparado.setNombre(productoNombre);
 
-                    // Crear la receta y asociarla al producto
-                    Receta receta = new Receta(rs.getString("nombre_receta"));
-                    productoPreparado.setReceta(receta);
-                    productoMap.put(productoId, productoPreparado);
-                    listarProductosPreparados.add(productoPreparado);
-                }
+                // Crear la receta asociada
+                Receta receta = new Receta();
+                receta.setId(recetaId);
+                receta.setNombreReceta(recetaNombre);
+                System.out.println("este es el numero"+recetaId);
+                // Obtener los ingredientes de la receta
+                List<Ingrediente> ingredientes = (List<Ingrediente>) ingredienteRepositorio.buscarPorID(recetaId);
+                receta.agregarIngrediente((Ingrediente) ingredientes);
 
-                // Agregar el ingrediente a la receta correspondiente
-                Ingrediente ingrediente = new Ingrediente(
-                        rs.getString("ingrediente_nombre"),
-                        rs.getDouble("cantidadingrediente")
-                );
-                productoPreparado.getReceta().agregarIngrediente(ingrediente);
+                // Asocia la receta al producto preparado
+                productoPreparado.setReceta(receta);
+
+                // Añadir el producto preparado a la lista
+                listaProductosPreparados.add(productoPreparado);
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Error al consultar los productos preparados: " + e.getMessage());
         }
 
-        return listarProductosPreparados;
+        return listaProductosPreparados;
     }
-
 
     @Override
     public void actualizar(ProductoPreparado productoPreparado) {
@@ -127,7 +116,6 @@ public class ProductoPreparadoRepositorio implements Repositorio<ProductoPrepara
     @Override
     public void eliminarPorID(int i) {
         String sql = "DELETE FROM productopreparado WHERE id = ?";
-
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, i);  // Establece el ID del producto preparado que deseas eliminar
             int filasEliminadas = stmt.executeUpdate();
@@ -141,7 +129,6 @@ public class ProductoPreparadoRepositorio implements Repositorio<ProductoPrepara
             JOptionPane.showMessageDialog(null, "Error al eliminar el producto: " + e.getMessage());
         }
     }
-
     private ProductoPreparado mapearProductoPreparado(ResultSet rs) throws SQLException {
         ProductoPreparado productoPreparado = new ProductoPreparado();
         productoPreparado.setId(rs.getInt("id"));
@@ -150,5 +137,4 @@ public class ProductoPreparadoRepositorio implements Repositorio<ProductoPrepara
         productoPreparado.setReceta(recetaR.buscarPorID(recetaId));
         return productoPreparado;
     }
-
 }
