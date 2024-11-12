@@ -12,3 +12,10 @@ actualmente trabajo en los repositorios de cada uno de los modelos.
 - Modelo de Receta: Listo
 - Modelo de Productos Comprados: Listo
 - Modelos de Productos Preparados: en Proceso.
+
+Actualmente
+actualmente estoy trabajando en el repositorio de productos preparados,
+es complejo ya que es dificil mantener una logica para que busque con los 
+repositorios que ya cree
+tengo que hacer que el repositorio de receta y de ingrediente me ayuden con
+eso. Gracias Dios.
