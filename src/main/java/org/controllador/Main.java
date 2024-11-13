@@ -17,8 +17,12 @@ public class Main {
 
 
     ProductoPreparadoRepositorio pcr= new ProductoPreparadoRepositorio();
+    ProductoPreparado pp= new ProductoPreparado();
+    pp.setNombre("la New");
+    pp.setId(1);
+    pcr.actualizar(pp);
+    pcr.buscarPorID(1);
 
-        System.out.println(pcr.listar());
 
 /*
         RecetaRepositorio rs = new RecetaRepositorio();

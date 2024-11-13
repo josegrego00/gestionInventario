@@ -105,6 +105,21 @@ public class ProductoPreparadoRepositorio implements Repositorio<ProductoPrepara
     @Override
     public void actualizar(ProductoPreparado productoPreparado) {
 
+        String sql = "UPDATE productopreparado SET nombre = ? WHERE id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            // Asignar los valores a los parámetros de la consulta SQL
+            stmt.setString(1, productoPreparado.getNombre());
+            stmt.setInt(2, productoPreparado.getId());
+            int filasActualizadas = stmt.executeUpdate();  // Ejecuta la actualización
+            if (filasActualizadas > 0) {
+                System.out.println("Nombre de Producto se actualizado con éxito.");
+            } else {
+                System.out.println("No se encontró producto con el ID especificado.");
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());  // Manejo de excepciones
+            e.printStackTrace();  // Manejo de excepciones
+        }
     }
 
     @Override
