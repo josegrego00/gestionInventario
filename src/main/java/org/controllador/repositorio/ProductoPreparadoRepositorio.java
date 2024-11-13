@@ -89,15 +89,9 @@ public class ProductoPreparadoRepositorio implements Repositorio<ProductoPrepara
                 Receta receta = new Receta();
                 receta.setId(recetaId);
                 receta.setNombreReceta(recetaNombre);
-                System.out.println("este es el numero"+recetaId);
-                // Obtener los ingredientes de la receta
-                List<Ingrediente> ingredientes = (List<Ingrediente>) ingredienteRepositorio.buscarPorID(recetaId);
-                receta.agregarIngrediente((Ingrediente) ingredientes);
+                productoPreparado.setReceta(recetaR.buscarPorID(recetaId));
 
-                // Asocia la receta al producto preparado
-                productoPreparado.setReceta(receta);
-
-                // Añadir el producto preparado a la lista
+               // Añadir el producto preparado a la lista
                 listaProductosPreparados.add(productoPreparado);
             }
         } catch (SQLException e) {
