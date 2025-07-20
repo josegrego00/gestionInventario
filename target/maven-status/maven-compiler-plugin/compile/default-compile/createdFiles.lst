@@ -1,0 +1,15 @@
+persistencia/VentaDetalladaJpaController.class
+logica/Venta.class
+persistencia/ProveedorJpaController.class
+persistencia/CategoriaJpaController.class
+controlador/ControladoraLogica.class
+persistencia/exceptions/IllegalOrphanException.class
+persistencia/VentaJpaController.class
+logica/Proveedor.class
+persistencia/ProductoJpaController.class
+persistencia/exceptions/NonexistentEntityException.class
+logica/Producto.class
+logica/Categoria.class
+persistencia/ControladoraPersistencia.class
+logica/VentaDetallada.class
+persistencia/exceptions/PreexistingEntityException.class

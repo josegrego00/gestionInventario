@@ -1,0 +1,15 @@
+/home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/controlador/ControladoraLogica.java
+/home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/persistencia/exceptions/IllegalOrphanException.java
+/home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/persistencia/CategoriaJpaController.java
+/home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/logica/Venta.java
+/home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/persistencia/ProductoJpaController.java
+/home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/logica/Proveedor.java
+/home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/logica/Categoria.java
+/home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/persistencia/VentaJpaController.java
+/home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/logica/Producto.java
+/home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/persistencia/VentaDetalladaJpaController.java
+/home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/persistencia/exceptions/NonexistentEntityException.java
+/home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/persistencia/ProveedorJpaController.java
+/home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/logica/VentaDetallada.java
+/home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/persistencia/ControladoraPersistencia.java
+/home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/persistencia/exceptions/PreexistingEntityException.java
