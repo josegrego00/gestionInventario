@@ -11,5 +11,6 @@
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/persistencia/exceptions/NonexistentEntityException.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/persistencia/ProveedorJpaController.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/logica/VentaDetallada.java
+/home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/servlets/SVGuardarProductoNuevo.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/persistencia/ControladoraPersistencia.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/persistencia/exceptions/PreexistingEntityException.java

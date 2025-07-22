@@ -2,6 +2,7 @@ create database gestion_inventario_venta;
 use gestion_inventario_venta;
 drop table producto, proveedor, inventario;
 show tables;
+describe producto;
 
 create table producto(
 id int primary key auto_increment,
@@ -47,6 +48,19 @@ precio_producto decimal(20,2) not null
 );
 alter table venta_detallada 
 add constraint fk_ventadetallada_idventa foreign key(id_venta) references venta(id);
+
+create table usuarios(
+id int primary key auto_increment,
+nombre_usuario varchar(200) not null,
+descripcion_usuario varchar(200),
+id_rol int not null
+);
+create table rol(
+id int primary key auto_increment,
+nombre_rol varchar(200) not null
+);
+alter table usuarios
+add column contrasenna varchar(50) not null after nombre_usuario;
 
 
 
