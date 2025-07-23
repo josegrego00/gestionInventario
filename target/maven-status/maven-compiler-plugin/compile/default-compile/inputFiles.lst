@@ -1,4 +1,5 @@
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/controlador/ControladoraLogica.java
+/home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/servlets/SVListarCategoriaYProveedor.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/persistencia/exceptions/IllegalOrphanException.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/persistencia/CategoriaJpaController.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/logica/Venta.java

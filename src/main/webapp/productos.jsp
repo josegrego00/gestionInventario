@@ -11,7 +11,7 @@
 <jsp:include page="index.jsp" />
 <div class="container mt-4">
     <h2 class="mb-3">Lista de Productos</h2>
-    <a href="crearproducto.jsp" class="btn btn-primary mb-3">Agregar Producto</a>
+    <a href="SVListarCategoriaYProveedor" class="btn btn-primary mb-3">Agregar Producto</a>
     <table class="table table-striped">
         <thead>
         <tr>

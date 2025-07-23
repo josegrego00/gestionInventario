@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.List;
 import logica.Categoria;
 import logica.Producto;
 import logica.Proveedor;
@@ -124,9 +125,17 @@ public class ControladoraLogica {
         return controladoraPersistencia.buscarCategoriaPorId(categoriaId);
     }
 
+    public List<Categoria> listarCategorias() {
+        return controladoraPersistencia.listarCategorias();
+    }
+
     //---------------------------------- Logica de Proveedor ----------------------------------
     private Proveedor buscarProveedorPorId(int proveedorId) {
         return controladoraPersistencia.buscarProveedorPorId(proveedorId);
+    }
+
+    public List<Proveedor> listarProveedor() {
+        return controladoraPersistencia.listarProveedor();
     }
 
 }

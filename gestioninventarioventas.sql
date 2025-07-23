@@ -1,9 +1,12 @@
 create database gestion_inventario_venta;
 use gestion_inventario_venta;
-drop table producto, proveedor, inventario;
+
 show tables;
 describe producto;
 
+Select * from categoria;
+Select * from proveedor;
+Select * from producto;
 create table producto(
 id int primary key auto_increment,
 nombre_producto varchar(200) not null,
