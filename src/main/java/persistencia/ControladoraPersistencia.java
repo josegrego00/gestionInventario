@@ -47,6 +47,7 @@ public class ControladoraPersistencia {
 
     //--------------------------------PErsistencia para PRoductos------------------------------
     public void guardarProductoNuevo(Producto producto) {
+        
         productoJpaController.create(producto);
     }
 

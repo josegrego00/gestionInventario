@@ -9,7 +9,7 @@ Select * from proveedor;
 Select * from producto;
 create table producto(
 id int primary key auto_increment,
-nombre_producto varchar(200) not null,
+nombre_producto varchar(200) not null unique,
 descripcion_producto varchar(200),
 costo_producto decimal(20,2),
 fecha_creacion timestamp,
@@ -18,7 +18,7 @@ id_categoria int not null,
 inventario decimal(10,2)
 );
 alter table producto
-add column costo_producto decimal(20,2) not null after descripcion_producto;
+modify column nombre_producto varchar(200) not null unique;
 alter table producto 
 add constraint fk_producto_idproveedor foreign key(id_proveedor) references proveedor(id);
 alter table producto 

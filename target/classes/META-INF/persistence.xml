@@ -7,6 +7,8 @@
     <class>logica.Proveedor</class>
     <class>logica.Venta</class>
     <class>logica.VentaDetallada</class>
+    <class>logica.Rol</class>
+    <class>logica.Usuarios</class>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/gestion_inventario_venta?serverTimezone=UTC"/>

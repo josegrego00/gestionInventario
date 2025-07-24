@@ -33,6 +33,7 @@ public class CategoriaJpaController implements Serializable {
     this.emf=Persistence.createEntityManagerFactory("gestionPU");
     }
     
+    
     private EntityManagerFactory emf = null;
 
     public EntityManager getEntityManager() {
