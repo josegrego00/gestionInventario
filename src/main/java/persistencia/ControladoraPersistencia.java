@@ -51,4 +51,8 @@ public class ControladoraPersistencia {
         productoJpaController.create(producto);
     }
 
+    public List<Producto> listarProductos() {
+        return productoJpaController.findProductoEntities();
+    }
+
 }

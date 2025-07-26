@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import logica.Usuarios;
 import persistencia.exceptions.IllegalOrphanException;
 import persistencia.exceptions.NonexistentEntityException;
@@ -27,6 +28,12 @@ public class UsuariosJpaController implements Serializable {
     public UsuariosJpaController(EntityManagerFactory emf) {
         this.emf = emf;
     }
+
+    public UsuariosJpaController() {
+    this.emf=Persistence.createEntityManagerFactory("gestionPU");
+    }
+    
+    
     private EntityManagerFactory emf = null;
 
     public EntityManager getEntityManager() {

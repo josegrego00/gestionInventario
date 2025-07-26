@@ -16,6 +16,10 @@
             <h2 class="mb-4">Agregar Nuevo Producto</h2>
             <form action="SVGuardarProductoNuevo" method="post">
                 <div class="mb-3">
+                    <label for="codigoBarra" class="form-label">Codigo de Barra</label>
+                    <input type="text" class="form-control" id="codigoBarra" name="codigoBarra" required>
+                </div>
+                <div class="mb-3">
                     <label for="nombre" class="form-label">Nombre del Producto</label>
                     <input type="text" class="form-control" id="nombre" name="nombre" required>
                 </div>

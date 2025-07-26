@@ -1,10 +1,13 @@
 create database gestion_inventario_venta;
 use gestion_inventario_venta;
 
+show databases;
 show tables;
 describe producto;
 
-Select * from categoria;
+
+
+Select * from usuario;
 Select * from proveedor;
 Select * from producto;
 create table producto(
@@ -18,7 +21,7 @@ id_categoria int not null,
 inventario decimal(10,2)
 );
 alter table producto
-modify column nombre_producto varchar(200) not null unique;
+modify column codigo_barra varchar(200) not null unique;
 alter table producto 
 add constraint fk_producto_idproveedor foreign key(id_proveedor) references proveedor(id);
 alter table producto 

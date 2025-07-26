@@ -35,6 +35,7 @@ import javax.validation.constraints.Size;
 @NamedQueries({
     @NamedQuery(name = "Producto.findAll", query = "SELECT p FROM Producto p"),
     @NamedQuery(name = "Producto.findById", query = "SELECT p FROM Producto p WHERE p.id = :id"),
+    @NamedQuery(name = "Producto.findByCodigoBarra", query = "SELECT p FROM Producto p WHERE p.codigoBarra = :codigoBarra"),
     @NamedQuery(name = "Producto.findByNombreProducto", query = "SELECT p FROM Producto p WHERE p.nombreProducto = :nombreProducto"),
     @NamedQuery(name = "Producto.findByDescripcionProducto", query = "SELECT p FROM Producto p WHERE p.descripcionProducto = :descripcionProducto"),
     @NamedQuery(name = "Producto.findByCostoProducto", query = "SELECT p FROM Producto p WHERE p.costoProducto = :costoProducto"),
@@ -48,6 +49,11 @@ public class Producto implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 200)
+    @Column(name = "codigo_barra")
+    private String codigoBarra;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 200)
@@ -82,8 +88,9 @@ public class Producto implements Serializable {
         this.id = id;
     }
 
-    public Producto(Integer id, String nombreProducto, BigDecimal costoProducto) {
+    public Producto(Integer id, String codigoBarra, String nombreProducto, BigDecimal costoProducto) {
         this.id = id;
+        this.codigoBarra = codigoBarra;
         this.nombreProducto = nombreProducto;
         this.costoProducto = costoProducto;
     }
@@ -94,6 +101,14 @@ public class Producto implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getCodigoBarra() {
+        return codigoBarra;
+    }
+
+    public void setCodigoBarra(String codigoBarra) {
+        this.codigoBarra = codigoBarra;
     }
 
     public String getNombreProducto() {
