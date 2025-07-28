@@ -10,10 +10,11 @@ import logica.Categoria;
 import logica.Proveedor;
 import logica.VentaDetallada;
 
-@Generated(value="EclipseLink-2.7.10.v20211216-rNA", date="2025-07-26T11:15:11")
+@Generated(value="EclipseLink-2.7.10.v20211216-rNA", date="2025-07-28T11:50:15")
 @StaticMetamodel(Producto.class)
 public class Producto_ { 
 
+    public static volatile SingularAttribute<Producto, String> codigoBarra;
     public static volatile SingularAttribute<Producto, String> descripcionProducto;
     public static volatile SingularAttribute<Producto, Proveedor> idProveedor;
     public static volatile SingularAttribute<Producto, Date> fechaCreacion;

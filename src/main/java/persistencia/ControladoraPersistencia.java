@@ -5,9 +5,13 @@
 package persistencia;
 
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import logica.Categoria;
 import logica.Producto;
 import logica.Proveedor;
+import persistencia.exceptions.IllegalOrphanException;
+import persistencia.exceptions.NonexistentEntityException;
 
 /**
  *
@@ -47,12 +51,32 @@ public class ControladoraPersistencia {
 
     //--------------------------------PErsistencia para PRoductos------------------------------
     public void guardarProductoNuevo(Producto producto) {
-        
+
         productoJpaController.create(producto);
     }
 
     public List<Producto> listarProductos() {
         return productoJpaController.findProductoEntities();
+    }
+
+    public void guardarActualizacionProducto(Producto productoActualizado) {
+        try {
+            productoJpaController.edit(productoActualizado);
+        } catch (NonexistentEntityException ex) {
+            Logger.getLogger(ControladoraPersistencia.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            Logger.getLogger(ControladoraPersistencia.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void eliminarProducto(Integer id) {
+        try {
+            productoJpaController.destroy(id);
+        } catch (IllegalOrphanException ex) {
+            Logger.getLogger(ControladoraPersistencia.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NonexistentEntityException ex) {
+            Logger.getLogger(ControladoraPersistencia.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
 }

@@ -56,8 +56,8 @@
                     <label for="proveedor" class="form-label">Proveedor</label>
                     <select class="form-select" id="proveedor" name="proveedorId" required>
                         <option selected disabled value="">Seleccione un proveedor</option>
-                       
-                        
+
+
                         <!-- Aqui coloco mis Proveedores -->
                         <%
                             List<Proveedor> listaProveedor = (List<Proveedor>) request.getAttribute("proveedores");
@@ -77,9 +77,18 @@
                     <input type="number" class="form-control" id="inventario" name="inventarioInicial" required>
                 </div>
                 <button type="submit" class="btn btn-success">Guardar Producto</button>
-                <a href="productos.jsp" class="btn btn-secondary">Cancelar</a>
+                <a href="SVListarProductos" class="btn btn-secondary" onclick="return confirmarCancelacion()">Cancelar</a>
             </form>
         </div>
+                        
+                        <<!-- ------------------------- JavaScript.--------------------------------- -->                        
+        <!-- Esto es una codigo de Java Script con la idea de que cuando se precione el boton de cancelarar arroje un mensaje de advertencia -->
+        <script>
+            function confirmarCancelacion() {
+                return confirm("¿Está seguro que desea cancelar? Se perderán los cambios y volverá al menú principal.");
+            }
+        </script>
+
     </body>
 </html>
 

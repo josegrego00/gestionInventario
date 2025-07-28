@@ -56,11 +56,6 @@ public class ControladoraLogica {
         Date fechaDate = Date.from(fecha.atStartOfDay(ZoneId.systemDefault()).toInstant());
         producto.setFechaCreacion(fechaDate);
 
-        System.out.println("producto");
-        System.out.println("producto nombre" + producto.getNombreProducto());
-        System.out.println("producto categoria " + producto.getIdCategoria().getNombreCategoria());
-        System.out.println("producto proveedor " + producto.getIdProveedor().getNombreProveedor());
-
         controladoraPersistencia.guardarProductoNuevo(producto);
 
     }
@@ -124,7 +119,7 @@ public class ControladoraLogica {
         if (contieneInyeccionSQL(descripcion)) {
             return false;
         }
-        
+
         if (contieneInyeccionSQL(codigoBarra)) {
             return false;
         }
@@ -167,17 +162,73 @@ public class ControladoraLogica {
         }
         return false;
     }
-    
+
     //esto es para obtener el producto con codigo de Barra
-    
     public Producto buscarProductoPorCodigoBarra(String codigoBarra) {
-        List<Producto> listarProducto=listarProductos();
-        for(Producto producto:listarProducto){
-            if(producto.getCodigoBarra().equals(codigoBarra)){
+        List<Producto> listarProducto = listarProductos();
+        for (Producto producto : listarProducto) {
+            if (producto.getCodigoBarra().equals(codigoBarra)) {
                 return producto;
             }
         }
         return null;
+    }
+
+    public void guardarActualizacionProducto(String codigoBarra, String nombre, String descripcion, double costoCompra, int categoriaId, int proveedorId) {
+
+        Producto productoActualizado = buscarProductoPorCodigoBarra(codigoBarra);
+        productoActualizado.setCodigoBarra(codigoBarra);
+        productoActualizado.setNombreProducto(nombre);
+        productoActualizado.setDescripcionProducto(descripcion);
+
+        //Transformo el costo que me da el HTML para Usarlo en mi Objeto
+        BigDecimal costo = BigDecimal.valueOf(costoCompra);
+        productoActualizado.setCostoProducto(costo);
+
+        //obtencion de categoria
+        Categoria categoria = buscarCategoriaPorId(categoriaId);
+        productoActualizado.setIdCategoria(categoria);
+
+        //obtencion de proveedor
+        Proveedor proveedor = buscarProveedorPorId(proveedorId);
+        productoActualizado.setIdProveedor(proveedor);
+
+        controladoraPersistencia.guardarActualizacionProducto(productoActualizado);
+    }
+
+    public boolean validarDatosProductoParaActualizar(String nombre, String descripcion, Double costoCompra, Integer categoriaId, Integer proveedorId) {
+        // Validar campos obligatorios esto es para generar un producto
+        if (nombre == null || nombre.trim().isEmpty()) {
+            return false;
+        }
+        if (descripcion == null || descripcion.trim().isEmpty()) {
+            return false;
+        }
+        if (costoCompra == null || costoCompra <= 0) {
+            return false;
+        }
+
+        if (categoriaId == null || categoriaId <= 0) {
+            return false;
+        }
+        if (proveedorId == null || proveedorId <= 0) {
+            return false;
+        }
+
+        // ------------------- Validar contenido de strings para evitar SQLi ---------------------------
+        if (contieneInyeccionSQL(nombre)) {
+            return false;
+        }
+
+        if (contieneInyeccionSQL(descripcion)) {
+            return false;
+        }
+
+        return true; // Todos los datos son válidos
+    }
+
+    public void eliminarProducto(Producto producto) {
+        controladoraPersistencia.eliminarProducto(producto.getId());
     }
 
     //--------------------------------- Logica de Categoria -----------------------------------
@@ -197,7 +248,5 @@ public class ControladoraLogica {
     public List<Proveedor> listarProveedor() {
         return controladoraPersistencia.listarProveedor();
     }
-
-    
 
 }

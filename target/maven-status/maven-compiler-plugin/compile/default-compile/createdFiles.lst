@@ -3,7 +3,10 @@ logica/Rol_.class
 persistencia/ProveedorJpaController.class
 persistencia/CategoriaJpaController.class
 persistencia/exceptions/IllegalOrphanException.class
+servlets/SVActualizarProductoEditar.class
+servlets/SVListarProductosVenta.class
 servlets/SVListarCategoriaYProveedor.class
+servlets/SVEliminarProducto.class
 persistencia/ProductoJpaController.class
 persistencia/exceptions/NonexistentEntityException.class
 logica/Venta_.class
@@ -11,10 +14,12 @@ logica/Categoria.class
 logica/VentaDetallada.class
 logica/Usuarios.class
 persistencia/VentaDetalladaJpaController.class
+servlets/SVListarProductos.class
 logica/Venta.class
 persistencia/UsuariosJpaController.class
 logica/Producto_.class
 logica/Proveedor_.class
+servlets/SVEditarProductoConCodigoBarra.class
 persistencia/RolJpaController.class
 persistencia/VentaJpaController.class
 logica/VentaDetallada_.class

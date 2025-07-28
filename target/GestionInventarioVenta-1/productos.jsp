@@ -56,8 +56,8 @@
                             <td><%= producto.getCostoProducto() %></td>
                             <td><%= producto.getInventario()%></td>
                             <td>
-                                <a href="SVEditarProductoConCodigoBarra?codigoBarra=<%= producto.getCodigoBarra() %>" class="btn btn-warning btn-sm">Editar</a>
-                                <a href="eliminarProducto?codigoBarra=<%= producto.getCodigoBarra()%>" class="btn btn-danger btn-sm">Eliminar</a>
+                                <a href="SVEditarProductoConCodigoBarra?codigoBarra=<%= producto.getCodigoBarra() %>" class="btn btn-warning btn-sm" op>Editar</a>
+                                <a href="SVEliminarProducto?codigoBarra=<%= producto.getCodigoBarra()%>" class="btn btn-danger btn-sm" onclick="return confirmarCancelacion()">Eliminar</a>
                             </td>
                         </tr>
                         <%
@@ -74,5 +74,13 @@
                 </table>
             </form>
         </div>
+                    
+                    <!-- ------------------------- JavaScript.--------------------------------- -->                        
+        <!-- Esto es una codigo de Java Script con la idea de que cuando se precione el boton de cancelarar arroje un mensaje de advertencia -->
+        <script>
+            function confirmarCancelacion() {
+                return confirm("¿Está seguro que desea Eliminar este Producto? ");
+            }
+        </script>
     </body>
 </html>

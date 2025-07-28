@@ -13,7 +13,7 @@
 <jsp:include page="index.jsp" />
 <div class="container mt-4">
     <h2 class="mb-3">Historial de Ventas</h2>
-    <a href="nuevaVenta.jsp" class="btn btn-primary mb-3">Registrar Venta</a>
+    <a href="SVListarProductosVenta" class="btn btn-primary mb-3">Registrar Venta</a>
     <table class="table table-striped">
         <thead>
         <tr>
