@@ -14,8 +14,8 @@ id int primary key auto_increment,
 dniCliente varchar(20) not null unique,
 nombre_cliente varchar(200) not null
 );
-
-Select * from cliente;
+describe venta;
+Select * from venta;
 Select * from proveedor;
 Select * from producto;
 create table producto(
