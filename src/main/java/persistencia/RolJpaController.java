@@ -31,8 +31,8 @@ public class RolJpaController implements Serializable {
 
     public RolJpaController() {
     this.emf=Persistence.createEntityManagerFactory("gestionPU");
-    }
     
+    }
     
     private EntityManagerFactory emf = null;
 

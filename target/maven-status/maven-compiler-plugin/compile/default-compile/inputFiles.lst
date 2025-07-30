@@ -12,6 +12,8 @@
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/servlets/SVListarProductosVenta.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/persistencia/RolJpaController.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/logica/VentaDetallada.java
+/home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/servlets/SVRegistrarVentaDetalle.java
+/home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/logica/Cliente.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/servlets/SVEditarProductoConCodigoBarra.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/persistencia/exceptions/PreexistingEntityException.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/logica/Usuarios.java
@@ -20,6 +22,7 @@
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/persistencia/VentaJpaController.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/persistencia/VentaDetalladaJpaController.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/persistencia/exceptions/NonexistentEntityException.java
+/home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/persistencia/ClienteJpaController.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/persistencia/ProveedorJpaController.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/servlets/SVEliminarProducto.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/servlets/SVGuardarProductoNuevo.java

@@ -9,6 +9,7 @@ import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import logica.Cliente;
 import logica.VentaDetallada;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +35,6 @@ public class VentaJpaController implements Serializable {
     }
     
     
-    
     private EntityManagerFactory emf = null;
 
     public EntityManager getEntityManager() {
@@ -49,6 +49,11 @@ public class VentaJpaController implements Serializable {
         try {
             em = getEntityManager();
             em.getTransaction().begin();
+            Cliente dniCliente = venta.getDniCliente();
+            if (dniCliente != null) {
+                dniCliente = em.getReference(dniCliente.getClass(), dniCliente.getId());
+                venta.setDniCliente(dniCliente);
+            }
             List<VentaDetallada> attachedVentaDetalladaList = new ArrayList<VentaDetallada>();
             for (VentaDetallada ventaDetalladaListVentaDetalladaToAttach : venta.getVentaDetalladaList()) {
                 ventaDetalladaListVentaDetalladaToAttach = em.getReference(ventaDetalladaListVentaDetalladaToAttach.getClass(), ventaDetalladaListVentaDetalladaToAttach.getId());
@@ -56,6 +61,10 @@ public class VentaJpaController implements Serializable {
             }
             venta.setVentaDetalladaList(attachedVentaDetalladaList);
             em.persist(venta);
+            if (dniCliente != null) {
+                dniCliente.getVentaList().add(venta);
+                dniCliente = em.merge(dniCliente);
+            }
             for (VentaDetallada ventaDetalladaListVentaDetallada : venta.getVentaDetalladaList()) {
                 Venta oldIdVentaOfVentaDetalladaListVentaDetallada = ventaDetalladaListVentaDetallada.getIdVenta();
                 ventaDetalladaListVentaDetallada.setIdVenta(venta);
@@ -79,6 +88,8 @@ public class VentaJpaController implements Serializable {
             em = getEntityManager();
             em.getTransaction().begin();
             Venta persistentVenta = em.find(Venta.class, venta.getId());
+            Cliente dniClienteOld = persistentVenta.getDniCliente();
+            Cliente dniClienteNew = venta.getDniCliente();
             List<VentaDetallada> ventaDetalladaListOld = persistentVenta.getVentaDetalladaList();
             List<VentaDetallada> ventaDetalladaListNew = venta.getVentaDetalladaList();
             List<String> illegalOrphanMessages = null;
@@ -93,6 +104,10 @@ public class VentaJpaController implements Serializable {
             if (illegalOrphanMessages != null) {
                 throw new IllegalOrphanException(illegalOrphanMessages);
             }
+            if (dniClienteNew != null) {
+                dniClienteNew = em.getReference(dniClienteNew.getClass(), dniClienteNew.getId());
+                venta.setDniCliente(dniClienteNew);
+            }
             List<VentaDetallada> attachedVentaDetalladaListNew = new ArrayList<VentaDetallada>();
             for (VentaDetallada ventaDetalladaListNewVentaDetalladaToAttach : ventaDetalladaListNew) {
                 ventaDetalladaListNewVentaDetalladaToAttach = em.getReference(ventaDetalladaListNewVentaDetalladaToAttach.getClass(), ventaDetalladaListNewVentaDetalladaToAttach.getId());
@@ -101,6 +116,14 @@ public class VentaJpaController implements Serializable {
             ventaDetalladaListNew = attachedVentaDetalladaListNew;
             venta.setVentaDetalladaList(ventaDetalladaListNew);
             venta = em.merge(venta);
+            if (dniClienteOld != null && !dniClienteOld.equals(dniClienteNew)) {
+                dniClienteOld.getVentaList().remove(venta);
+                dniClienteOld = em.merge(dniClienteOld);
+            }
+            if (dniClienteNew != null && !dniClienteNew.equals(dniClienteOld)) {
+                dniClienteNew.getVentaList().add(venta);
+                dniClienteNew = em.merge(dniClienteNew);
+            }
             for (VentaDetallada ventaDetalladaListNewVentaDetallada : ventaDetalladaListNew) {
                 if (!ventaDetalladaListOld.contains(ventaDetalladaListNewVentaDetallada)) {
                     Venta oldIdVentaOfVentaDetalladaListNewVentaDetallada = ventaDetalladaListNewVentaDetallada.getIdVenta();
@@ -151,6 +174,11 @@ public class VentaJpaController implements Serializable {
             }
             if (illegalOrphanMessages != null) {
                 throw new IllegalOrphanException(illegalOrphanMessages);
+            }
+            Cliente dniCliente = venta.getDniCliente();
+            if (dniCliente != null) {
+                dniCliente.getVentaList().remove(venta);
+                dniCliente = em.merge(dniCliente);
             }
             em.remove(venta);
             em.getTransaction().commit();

@@ -1,3 +1,4 @@
+<%@page import="logica.Cliente"%>
 <%@page import="logica.Producto"%>
 <%@page import="java.util.List"%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
@@ -19,6 +20,39 @@
             <!-- Formulario principal -->
             <form action="SVRegistrarVentaDetalle" method="post" onsubmit="return prepararDatosParaEnviar();">
 
+
+
+                <!-- Selección o registro de cliente -->
+                <div class="mb-4">
+                    <label>Cliente</label>
+                    <select id="clienteSelect" name="clienteId" class="form-select" onchange="mostrarFormularioCliente()">
+                        <option selected disabled value="">Seleccione un cliente</option>
+                        <%
+                            List<Cliente> clientes = (List<Cliente>) request.getAttribute("listaClientesExistentes");
+                            if (clientes != null) {
+                                for (Cliente c : clientes) {
+                        %>
+                        <option value="<%= c.getDniCliente()%>"><%= c.getNombreCliente()%> - <%= c.getDniCliente()%></option>
+                        <% }
+                            } %>
+                        <option value="nuevo">Nuevo cliente</option>
+                    </select>
+                </div>
+
+                <!-- Formulario para nuevo cliente -->
+                <div id="nuevoClienteForm" style="display:none;" class="border p-3 mb-4">
+                    <h5>Nuevo Cliente</h5>
+                    <div class="row mb-2">
+                        <div class="col-md-6">
+                            <label>Nombre</label>
+                            <input type="text" name="nuevoNombre" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label>DNI</label>
+                            <input type="text" name="nuevoDni" class="form-control">
+                        </div>
+                    </div>
+                </div>
                 <!-- Sección para agregar productos -->
                 <div class="row mb-3">
                     <div class="col-md-5">
@@ -30,7 +64,7 @@
                                 if (productos != null) {
                                     for (Producto p : productos) {
                             %>
-                            <option value="<%= p.getCodigoBarra()%>" data-nombre="<%= p.getNombreProducto()%>" data-precio="<%= p.getCostoProducto().doubleValue() %>">
+                            <option value="<%= p.getCodigoBarra()%>" data-nombre="<%= p.getNombreProducto()%>" data-precio="<%= p.getCostoProducto().doubleValue()%>">
                                 <%= p.getNombreProducto()%> - Valor - $<%= p.getCostoProducto()%>
                             </option>
                             <% }
@@ -67,8 +101,8 @@
 
                 <!-- Total -->
                 <div class="mb-3">
-                    <label>Total:</label>
-                    <input type="text" id="totalGeneral" class="form-control" readonly>
+                    <label>Total: $ </label>
+                    <input type="text" id="totalGeneral" name="totalGeneral" class="form-control" readonly>
                 </div>
 
                 <!-- Botones -->
@@ -128,8 +162,11 @@
             }
 
             function eliminarFila(btn) {
+                if (!confirmarCancelacion()) {
+                    return;
+                }
                 const fila = btn.closest("tr");
-                const index = fila.rowIndex - 1; // porque hay thead
+                const index = fila.rowIndex - 1;
                 fila.remove();
                 detalle.splice(index, 1);
                 calcularTotal();
@@ -137,7 +174,7 @@
 
             function calcularTotal() {
                 const total = detalle.reduce((sum, item) => sum + item.subtotal, 0);
-                document.getElementById("totalGeneral").value = "$" + total.toFixed(2);
+                document.getElementById("totalGeneral").value = total.toFixed(2);
             }
 
             function prepararDatosParaEnviar() {
@@ -149,6 +186,22 @@
                 document.getElementById("detalleJson").value = JSON.stringify(detalle);
                 return true;
             }
+            function confirmarCancelacion() {
+                return confirm("¿Está seguro que desea Eliminar este Producto de la factura? ");
+            }
+
+            function mostrarFormularioCliente() {
+                const select = document.getElementById("clienteSelect");
+                const nuevoForm = document.getElementById("nuevoClienteForm");
+
+                if (select.value === "nuevo") {
+                    nuevoForm.style.display = "block";
+                } else {
+                    nuevoForm.style.display = "none";
+                }
+            }
+
+
         </script>
 
     </body>

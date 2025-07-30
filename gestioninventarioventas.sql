@@ -3,11 +3,19 @@ use gestion_inventario_venta;
 
 show databases;
 show tables;
-describe producto;
+describe venta_detallada;
+describe venta;
 
+alter table venta 
+add constraint fk_venta_cliente foreign key(dniCliente) references cliente(dniCliente) ;
 
+create table cliente(
+id int primary key auto_increment,
+dniCliente varchar(20) not null unique,
+nombre_cliente varchar(200) not null
+);
 
-Select * from usuario;
+Select * from cliente;
 Select * from proveedor;
 Select * from producto;
 create table producto(

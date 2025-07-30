@@ -8,8 +8,10 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import logica.Categoria;
+import logica.Cliente;
 import logica.Producto;
 import logica.Proveedor;
+import logica.Venta;
 import persistencia.exceptions.IllegalOrphanException;
 import persistencia.exceptions.NonexistentEntityException;
 
@@ -18,24 +20,27 @@ import persistencia.exceptions.NonexistentEntityException;
  * @author josepino
  */
 public class ControladoraPersistencia {
-
+    
     private CategoriaJpaController categoriaJpaController;
     private ProveedorJpaController proveedorJpaController;
     private ProductoJpaController productoJpaController;
-
+    private ClienteJpaController clienteJpaController;
+    private VentaJpaController ventaJpaController;
+    
     public ControladoraPersistencia() {
-
+        
         categoriaJpaController = new CategoriaJpaController();
         proveedorJpaController = new ProveedorJpaController();
         productoJpaController = new ProductoJpaController();
-
+        clienteJpaController = new ClienteJpaController();
+        ventaJpaController = new VentaJpaController();
     }
 
     //------------------------------Persistencia de Categoria -------------------------------
     public Categoria buscarCategoriaPorId(int categoriaId) {
         return categoriaJpaController.findCategoria(categoriaId);
     }
-
+    
     public List<Categoria> listarCategorias() {
         return categoriaJpaController.findCategoriaEntities();
     }
@@ -44,21 +49,21 @@ public class ControladoraPersistencia {
     public Proveedor buscarProveedorPorId(int proveedorId) {
         return proveedorJpaController.findProveedor(proveedorId);
     }
-
+    
     public List<Proveedor> listarProveedor() {
         return proveedorJpaController.findProveedorEntities();
     }
 
     //--------------------------------PErsistencia para PRoductos------------------------------
     public void guardarProductoNuevo(Producto producto) {
-
+        
         productoJpaController.create(producto);
     }
-
+    
     public List<Producto> listarProductos() {
         return productoJpaController.findProductoEntities();
     }
-
+    
     public void guardarActualizacionProducto(Producto productoActualizado) {
         try {
             productoJpaController.edit(productoActualizado);
@@ -68,7 +73,7 @@ public class ControladoraPersistencia {
             Logger.getLogger(ControladoraPersistencia.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
+    
     public void eliminarProducto(Integer id) {
         try {
             productoJpaController.destroy(id);
@@ -79,4 +84,17 @@ public class ControladoraPersistencia {
         }
     }
 
+    //---------------------------- Persistencia de Clientes-------------------------------------------
+    public List<Cliente> listarClientes() {
+        return clienteJpaController.findClienteEntities();
+    }
+    
+    public void crearNuevoCliente(Cliente clienteNuevo) {
+        clienteJpaController.create(clienteNuevo);
+    }
+    
+    public void crearFactura(Venta venta) {
+        ventaJpaController.create(venta);
+    }
+    
 }

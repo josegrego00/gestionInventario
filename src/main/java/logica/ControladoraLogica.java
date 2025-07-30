@@ -6,6 +6,7 @@ package logica;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
@@ -247,6 +248,72 @@ public class ControladoraLogica {
 
     public List<Proveedor> listarProveedor() {
         return controladoraPersistencia.listarProveedor();
+    }
+
+    //-------------------------------- Logica de Clientes------------------------------------------
+    public List<Cliente> listarClientes() {
+        return controladoraPersistencia.listarClientes();
+    }
+
+    public boolean validarClientePorDni(String dniCliente) {
+        List<Cliente> listaClientesExistentes = listarClientes();
+        for (Cliente cliente : listaClientesExistentes) {
+            if (cliente.getDniCliente().equals(dniCliente)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void agregarNuevoCliente(String clienteId, String nombreCliente) {
+        Cliente clienteNuevo = new Cliente();
+        clienteNuevo.setDniCliente(clienteId);
+        clienteNuevo.setNombreCliente(nombreCliente);
+        controladoraPersistencia.crearNuevoCliente(clienteNuevo);
+    }
+
+    public boolean validarDatosIngresadosCliente(String clienteId, String nombreCliente) {
+        if (nombreCliente == null || nombreCliente.trim().isEmpty()) {
+            return false;
+        }
+        if (clienteId == null || clienteId.trim().isEmpty()) {
+            return false;
+        }
+        if (contieneInyeccionSQL(nombreCliente)) {
+            return false;
+        }
+
+        if (contieneInyeccionSQL(clienteId)) {
+            return false;
+        }
+        return true;
+    }
+
+    public void crearFactura(String dniCliente, double totalFactura, LocalDateTime horaActualFactura) {
+        
+        // Se Crean las VEnta, es decir numero de factura
+        
+        Venta venta= new Venta();
+        
+        //Se crea  el cliente que estara dentro de la factura y se le agrega el monto total de la facturas
+        
+        Cliente cliente=buscarClientePorDni(dniCliente);
+        venta.setDniCliente(cliente);
+        venta.setFechaVenta(horaActualFactura);
+        //se convierte el double a un bigdecimal
+        venta.setTotalVenta(BigDecimal.valueOf(totalFactura));
+        
+        controladoraPersistencia.crearFactura(venta);
+    }
+
+    private Cliente buscarClientePorDni(String dniCliente) {
+        List<Cliente> listaClientEx=listarClientes();
+        for(Cliente clien: listaClientEx){
+            if(clien.getDniCliente().equals(dniCliente)){
+                return clien;
+            }
+        }
+        return null;        
     }
 
 }

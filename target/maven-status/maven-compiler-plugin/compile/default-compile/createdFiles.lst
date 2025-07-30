@@ -1,5 +1,6 @@
 logica/Usuarios_.class
 logica/Rol_.class
+servlets/SVRegistrarVentaDetalle.class
 persistencia/ProveedorJpaController.class
 persistencia/CategoriaJpaController.class
 persistencia/exceptions/IllegalOrphanException.class
@@ -13,6 +14,8 @@ logica/Venta_.class
 logica/Categoria.class
 logica/VentaDetallada.class
 logica/Usuarios.class
+persistencia/ClienteJpaController.class
+logica/Cliente_.class
 persistencia/VentaDetalladaJpaController.class
 servlets/SVListarProductos.class
 logica/Venta.class
@@ -22,6 +25,7 @@ logica/Proveedor_.class
 servlets/SVEditarProductoConCodigoBarra.class
 persistencia/RolJpaController.class
 persistencia/VentaJpaController.class
+logica/Cliente.class
 logica/VentaDetallada_.class
 logica/Proveedor.class
 servlets/SVGuardarProductoNuevo.class

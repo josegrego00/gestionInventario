@@ -6,6 +6,7 @@ package logica;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
@@ -15,6 +16,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -22,7 +25,6 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 /**
  *
@@ -34,7 +36,6 @@ import javax.validation.constraints.Size;
     @NamedQuery(name = "Venta.findAll", query = "SELECT v FROM Venta v"),
     @NamedQuery(name = "Venta.findById", query = "SELECT v FROM Venta v WHERE v.id = :id"),
     @NamedQuery(name = "Venta.findByFechaVenta", query = "SELECT v FROM Venta v WHERE v.fechaVenta = :fechaVenta"),
-    @NamedQuery(name = "Venta.findByDescripcionVenta", query = "SELECT v FROM Venta v WHERE v.descripcionVenta = :descripcionVenta"),
     @NamedQuery(name = "Venta.findByTotalVenta", query = "SELECT v FROM Venta v WHERE v.totalVenta = :totalVenta")})
 public class Venta implements Serializable {
 
@@ -47,16 +48,15 @@ public class Venta implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Column(name = "fecha_venta")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date fechaVenta;
-    @Size(max = 2000)
-    @Column(name = "descripcion_venta")
-    private String descripcionVenta;
+    private LocalDateTime fechaVenta;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Basic(optional = false)
     @NotNull
     @Column(name = "total_venta")
     private BigDecimal totalVenta;
+    @JoinColumn(name = "dniCliente", referencedColumnName = "dniCliente")
+    @ManyToOne(optional = false)
+    private Cliente dniCliente;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "idVenta")
     private List<VentaDetallada> ventaDetalladaList;
 
@@ -67,7 +67,7 @@ public class Venta implements Serializable {
         this.id = id;
     }
 
-    public Venta(Integer id, Date fechaVenta, BigDecimal totalVenta) {
+    public Venta(Integer id, LocalDateTime fechaVenta, BigDecimal totalVenta) {
         this.id = id;
         this.fechaVenta = fechaVenta;
         this.totalVenta = totalVenta;
@@ -81,20 +81,12 @@ public class Venta implements Serializable {
         this.id = id;
     }
 
-    public Date getFechaVenta() {
+    public LocalDateTime getFechaVenta() {
         return fechaVenta;
     }
 
-    public void setFechaVenta(Date fechaVenta) {
+    public void setFechaVenta(LocalDateTime fechaVenta) {
         this.fechaVenta = fechaVenta;
-    }
-
-    public String getDescripcionVenta() {
-        return descripcionVenta;
-    }
-
-    public void setDescripcionVenta(String descripcionVenta) {
-        this.descripcionVenta = descripcionVenta;
     }
 
     public BigDecimal getTotalVenta() {
@@ -103,6 +95,14 @@ public class Venta implements Serializable {
 
     public void setTotalVenta(BigDecimal totalVenta) {
         this.totalVenta = totalVenta;
+    }
+
+    public Cliente getDniCliente() {
+        return dniCliente;
+    }
+
+    public void setDniCliente(Cliente dniCliente) {
+        this.dniCliente = dniCliente;
     }
 
     public List<VentaDetallada> getVentaDetalladaList() {
@@ -137,5 +137,5 @@ public class Venta implements Serializable {
     public String toString() {
         return "logica.Venta[ id=" + id + " ]";
     }
-    
+
 }
