@@ -29,6 +29,21 @@ public class ControladoraLogica {
         controladoraPersistencia = new ControladoraPersistencia();
     }
 
+    //--------------------------- Logica Para todo------------------------------------
+    // Este sera un metodo en la cual se le puedo ingersar n texto sea 
+    //el q sea, con el fin de evitar errorres y que la base de datos se llene de basura
+    public boolean validarTexto(String texto) {
+
+        if (texto == null || texto.trim().isEmpty()) {
+            return false;
+        }
+        if (contieneInyeccionSQL(texto)) {
+            return false;
+        }
+        return true;
+
+    }
+
     //-----------------------------Logica de Productos----------------------------------
     //Guardar  un producto
     public void guardarProductoNuevo(String codigoBarra, String nombre, String descripcion, double costoCompra, int inventarioInicial, int categoriaId, int proveedorId) {
@@ -46,7 +61,7 @@ public class ControladoraLogica {
         producto.setInventario(inventario);
 
         //obtencion de categoria
-        Categoria categoria = buscarCategoriaPorId(categoriaId);
+        Categoria categoria = buscarCategoriaPorID(categoriaId);
         producto.setIdCategoria(categoria);
 
         //obtencion de proveedor
@@ -187,7 +202,7 @@ public class ControladoraLogica {
         productoActualizado.setCostoProducto(costo);
 
         //obtencion de categoria
-        Categoria categoria = buscarCategoriaPorId(categoriaId);
+        Categoria categoria = buscarCategoriaPorID(categoriaId);
         productoActualizado.setIdCategoria(categoria);
 
         //obtencion de proveedor
@@ -232,13 +247,57 @@ public class ControladoraLogica {
         controladoraPersistencia.eliminarProducto(producto.getId());
     }
 
-    //--------------------------------- Logica de Categoria -----------------------------------
-    private Categoria buscarCategoriaPorId(int categoriaId) {
-        return controladoraPersistencia.buscarCategoriaPorId(categoriaId);
-    }
-
+//--------------------------------- Logica de Categoria -----------------------------------
     public List<Categoria> listarCategorias() {
         return controladoraPersistencia.listarCategorias();
+    }
+
+    public Categoria buscarCategoriaPorID(int idCategoria) {
+        return controladoraPersistencia.buscarCategoriaPorId(idCategoria);
+    }
+
+    // se toma toda las categoria porque la verdad el sistema no tendragran cantidad de categorias
+    // Asumo que por muuuuucho tendra 1000
+    public boolean existeCategoria(String nombreCategoria) {
+        List<Categoria> listaCategoriaExistente = listarCategorias();
+        for (Categoria categoria : listaCategoriaExistente) {
+            if (categoria.getNombreCategoria().equals(nombreCategoria)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public Categoria buscarCategoriaPorNombre(String nombreCategoria) {
+        List<Categoria> listaCategoriasExistentes = listarCategorias();
+        for (Categoria categoria : listaCategoriasExistentes) {
+            if (categoria.getNombreCategoria().equals(nombreCategoria)) {
+                return categoria;
+            }
+        }
+        return null;
+    }
+
+    public void guardarActualizacionCategoria(Integer idcategoria, String nombreCategoria, String descripcionCategoria) {
+        Categoria categoria = buscarCategoriaPorID(idcategoria);
+        if (categoria != null) {
+            categoria.setNombreCategoria(nombreCategoria);
+            categoria.setDescripcionCategoria(descripcionCategoria);
+            controladoraPersistencia.guardarActualizacionCategoria(categoria);
+        }
+    }
+
+    public void eliminarCategoria(String idCategoria) {
+
+        controladoraPersistencia.eliminarCategoria(Integer.parseInt(idCategoria));
+
+    }
+
+    public void guardarCategoriaNuevo(String nombreCategoria, String descripcionCategoria) {
+        Categoria categoria = new Categoria();
+        categoria.setNombreCategoria(nombreCategoria);
+        categoria.setDescripcionCategoria(descripcionCategoria);
+        controladoraPersistencia.guardarCategoriaNueva(categoria);
     }
 
     //---------------------------------- Logica de Proveedor ----------------------------------
@@ -289,31 +348,44 @@ public class ControladoraLogica {
         return true;
     }
 
-    public void crearFactura(String dniCliente, double totalFactura, LocalDateTime horaActualFactura) {
-        
+    private Cliente buscarClientePorDni(String dniCliente) {
+        List<Cliente> listaClientEx = listarClientes();
+        for (Cliente clien : listaClientEx) {
+            if (clien.getDniCliente().equals(dniCliente)) {
+                return clien;
+            }
+        }
+        return null;
+    }
+
+    //----------------------------------Ventas ---------------------------------------------------------------
+    public int crearFactura(String dniCliente, double totalFactura, LocalDateTime horaActualFactura) {
+
         // Se Crean las VEnta, es decir numero de factura
-        
-        Venta venta= new Venta();
-        
+        Venta venta = new Venta();
+
         //Se crea  el cliente que estara dentro de la factura y se le agrega el monto total de la facturas
-        
-        Cliente cliente=buscarClientePorDni(dniCliente);
+        Cliente cliente = buscarClientePorDni(dniCliente);
         venta.setDniCliente(cliente);
         venta.setFechaVenta(horaActualFactura);
         //se convierte el double a un bigdecimal
         venta.setTotalVenta(BigDecimal.valueOf(totalFactura));
-        
+
         controladoraPersistencia.crearFactura(venta);
+        return venta.getId();
     }
 
-    private Cliente buscarClientePorDni(String dniCliente) {
-        List<Cliente> listaClientEx=listarClientes();
-        for(Cliente clien: listaClientEx){
-            if(clien.getDniCliente().equals(dniCliente)){
-                return clien;
-            }
+    public void guardarDetalleVenta(List<VentaDetallada> listaDetalleVenta, int idFactura) {
+
+        for (VentaDetallada detallada : listaDetalleVenta) {
+
+            VentaDetallada detalle = new VentaDetallada();
+            detallada.setId(idFactura);
+            detallada.setIdProducto(detallada.getIdProducto());
+            detallada.setCantidadVendida(detallada.getCantidadVendida());
+            detallada.setPrecioProducto(detallada.getPrecioProducto());
+            controladoraPersistencia.guardarDetalleVenta(detalle);
         }
-        return null;        
-    }
 
+    }
 }

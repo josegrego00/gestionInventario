@@ -73,6 +73,15 @@
             <version>9.3.0</version>
         </dependency>
         
+        
+        <!-- Dependencia para manejar JSON con una herramiento de GOOGLE -->
+        
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.10.1</version>
+        </dependency>
+
     </dependencies>
     
     <build>

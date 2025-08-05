@@ -15,8 +15,8 @@
         <div class="collapse navbar-collapse">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item"><a class="nav-link" href="SVListarProductos">Productos</a></li>
-                <li class="nav-item"><a class="nav-link" href="categoria.jsp">Categorías</a></li>
-                <li class="nav-item"><a class="nav-link" href="proveedor.jsp">Proveedores</a></li>
+                <li class="nav-item"><a class="nav-link" href="SVListarCategoriaCrearCategoria">Categorías</a></li>
+                <li class="nav-item"><a class="nav-link" href="SVListarProveedorCrearProveedor">Proveedores</a></li>
                 <li class="nav-item"><a class="nav-link" href="ventas.jsp">Ventas</a></li>
                 <li class="nav-item"><a class="nav-link" href="compras.jsp">Compras</a></li>
             </ul>
