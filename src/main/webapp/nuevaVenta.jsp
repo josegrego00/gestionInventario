@@ -113,6 +113,8 @@
 
         <!-- --------------------- JavaScript -------------------- -->
         <script>
+            //Aqui es donde Agrego el detalle de mi venta
+            // En este Array
             const detalle = [];
 
             function agregarProducto() {

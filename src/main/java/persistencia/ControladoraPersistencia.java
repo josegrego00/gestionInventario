@@ -36,7 +36,7 @@ public class ControladoraPersistencia {
         productoJpaController = new ProductoJpaController();
         clienteJpaController = new ClienteJpaController();
         ventaJpaController = new VentaJpaController();
-        ventaDetalladaJpaController= new VentaDetalladaJpaController();
+        ventaDetalladaJpaController = new VentaDetalladaJpaController();
     }
 
     //------------------------------Persistencia de Categoria -------------------------------
@@ -126,6 +126,14 @@ public class ControladoraPersistencia {
 
     public void guardarDetalleVenta(VentaDetallada ventaDetalle) {
         ventaDetalladaJpaController.create(ventaDetalle);
+    }
+
+    public Venta buscarVentaFactura(int idFactura) {
+        return ventaJpaController.findVenta(idFactura);
+    }
+
+    public List<Venta> listarVentas() {
+        return ventaJpaController.findVentaEntities();
     }
 
 }

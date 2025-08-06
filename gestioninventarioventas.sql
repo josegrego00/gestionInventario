@@ -15,9 +15,9 @@ dniCliente varchar(20) not null unique,
 nombre_cliente varchar(200) not null
 );
 describe venta;
+Select * from venta_detallada;
 Select * from venta;
-Select * from proveedor;
-Select * from categoria;
+Select * from cliente;
 create table producto(
 id int primary key auto_increment,
 nombre_producto varchar(200) not null unique,

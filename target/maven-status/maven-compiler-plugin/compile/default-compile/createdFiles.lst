@@ -4,6 +4,7 @@ servlets/SVListarProveedorCrearProveedor.class
 servlets/SVRegistrarVentaDetalle.class
 persistencia/ProveedorJpaController.class
 persistencia/CategoriaJpaController.class
+logica/DetalleVentaFactura.class
 persistencia/exceptions/IllegalOrphanException.class
 servlets/SVActualizarProductoEditar.class
 servlets/SVListarProductosVenta.class
@@ -26,13 +27,13 @@ servlets/SVListarCategoriaCrearCategoria.class
 logica/Producto_.class
 logica/Proveedor_.class
 servlets/SVEditarProductoConCodigoBarra.class
-logica/LocalDateTimeAdapter.class
 persistencia/RolJpaController.class
 persistencia/VentaJpaController.class
 logica/Cliente.class
 servlets/SVActualizarCategoria.class
 logica/VentaDetallada_.class
 logica/Proveedor.class
+logica/ControladoraLogica$1.class
 servlets/SVEliminarCategoria.class
 servlets/SVEditarCategoriasPorCodigo.class
 servlets/SVGuardarProductoNuevo.class
@@ -40,6 +41,5 @@ logica/Producto.class
 logica/ControladoraLogica.class
 persistencia/ControladoraPersistencia.class
 persistencia/exceptions/PreexistingEntityException.class
-servlets/SVRegistrarVentaDetalle$1.class
 logica/Categoria_.class
 logica/Rol.class

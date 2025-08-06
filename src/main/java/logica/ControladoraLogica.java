@@ -4,6 +4,9 @@
  */
 package logica;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -314,6 +317,31 @@ public class ControladoraLogica {
         return controladoraPersistencia.listarClientes();
     }
 
+    public String determinarCliente(String opcionCliente, String nuevoDni, String nuevoNombre) {
+
+        if (opcionCliente == null || opcionCliente.trim().isEmpty()) {
+            String clientePorDefecto = "5555555"; // DNI del cliente por defecto
+            if (validarClientePorDni(clientePorDefecto)) {
+                return clientePorDefecto;
+            }
+        }
+
+        if ("nuevo".equals(opcionCliente)) {
+            // Validar datos del nuevo cliente
+            if (!validarDatosIngresadosCliente(nuevoDni, nuevoNombre)) {
+                return null;
+            }
+            // Si el cliente no existe, crearlo
+            if (!validarClientePorDni(nuevoDni)) {
+                agregarNuevoCliente(nuevoDni, nuevoNombre);
+            }
+            return nuevoDni;
+        } else {
+            // Validar que el cliente existente sea válido
+            return validarClientePorDni(opcionCliente) ? opcionCliente : null;
+        }
+    }
+
     public boolean validarClientePorDni(String dniCliente) {
         List<Cliente> listaClientesExistentes = listarClientes();
         for (Cliente cliente : listaClientesExistentes) {
@@ -375,17 +403,39 @@ public class ControladoraLogica {
         return venta.getId();
     }
 
-    public void guardarDetalleVenta(List<VentaDetallada> listaDetalleVenta, int idFactura) {
-
-        for (VentaDetallada detallada : listaDetalleVenta) {
-
-            VentaDetallada detalle = new VentaDetallada();
-            detallada.setId(idFactura);
-            detallada.setIdProducto(detallada.getIdProducto());
-            detallada.setCantidadVendida(detallada.getCantidadVendida());
-            detallada.setPrecioProducto(detallada.getPrecioProducto());
-            controladoraPersistencia.guardarDetalleVenta(detalle);
+    public boolean procesarDetallesVenta(String detalleJson, int idFactura) {
+        if (detalleJson == null || detalleJson.trim().isEmpty()) {
+            return false;
         }
 
+        try {
+            Gson gson = new Gson();
+            Type tipoLista = new TypeToken<List<DetalleVentaFactura>>() {
+            }.getType();
+            List<DetalleVentaFactura> detalles = gson.fromJson(detalleJson, tipoLista);
+            Venta facturaVenta = buscarVentaFactura(idFactura);
+            for (DetalleVentaFactura item : detalles) {
+                VentaDetallada ventaDetallada = new VentaDetallada();
+                Producto producto = buscarProductoPorCodigoBarra(item.getProductoId());
+                ventaDetallada.setIdVenta(facturaVenta);
+                ventaDetallada.setIdProducto(producto);
+                ventaDetallada.setCantidadVendida(BigDecimal.valueOf(item.getCantidad()));
+                ventaDetallada.setPrecioProducto(BigDecimal.valueOf(item.getPrecio()));
+                controladoraPersistencia.guardarDetalleVenta(ventaDetallada);
+
+            }
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private Venta buscarVentaFactura(int idFactura) {
+        return controladoraPersistencia.buscarVentaFactura(idFactura);
+    }
+
+    public List<Venta> listarVentas() {
+        return controladoraPersistencia.listarVentas();
     }
 }

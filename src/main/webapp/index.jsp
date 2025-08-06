@@ -17,7 +17,7 @@
                 <li class="nav-item"><a class="nav-link" href="SVListarProductos">Productos</a></li>
                 <li class="nav-item"><a class="nav-link" href="SVListarCategoriaCrearCategoria">Categorías</a></li>
                 <li class="nav-item"><a class="nav-link" href="SVListarProveedorCrearProveedor">Proveedores</a></li>
-                <li class="nav-item"><a class="nav-link" href="ventas.jsp">Ventas</a></li>
+                <li class="nav-item"><a class="nav-link" href="SVListarVentasReportes">Ventas</a></li>
                 <li class="nav-item"><a class="nav-link" href="compras.jsp">Compras</a></li>
             </ul>
         </div>

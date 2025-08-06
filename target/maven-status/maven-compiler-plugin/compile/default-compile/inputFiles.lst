@@ -19,10 +19,10 @@
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/servlets/SVGuardarNuevaCategoria.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/servlets/SVEditarProductoConCodigoBarra.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/persistencia/exceptions/PreexistingEntityException.java
-/home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/logica/LocalDateTimeAdapter.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/logica/Usuarios.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/logica/Rol.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/persistencia/CategoriaJpaController.java
+/home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/logica/DetalleVentaFactura.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/persistencia/VentaJpaController.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/servlets/SVEditarCategoriasPorCodigo.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/persistencia/VentaDetalladaJpaController.java
