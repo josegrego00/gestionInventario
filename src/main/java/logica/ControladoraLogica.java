@@ -6,13 +6,29 @@ package logica;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.itextpdf.kernel.pdf.*;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Cell;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.element.Text;
+import com.itextpdf.layout.property.TextAlignment;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import logica.Categoria;
 import logica.Producto;
 import logica.Proveedor;
@@ -403,7 +419,7 @@ public class ControladoraLogica {
         return venta.getId();
     }
 
-    public boolean procesarDetallesVenta(String detalleJson, int idFactura) {
+    public boolean procesarDetallesVenta(String detalleJson, int idFactura, HttpServletRequest request, HttpServletResponse response) {
         if (detalleJson == null || detalleJson.trim().isEmpty()) {
             return false;
         }
@@ -422,7 +438,7 @@ public class ControladoraLogica {
                 ventaDetallada.setCantidadVendida(BigDecimal.valueOf(item.getCantidad()));
                 ventaDetallada.setPrecioProducto(BigDecimal.valueOf(item.getPrecio()));
                 controladoraPersistencia.guardarDetalleVenta(ventaDetallada);
-
+                generarFactura(request, response, idFactura);
             }
             return true;
         } catch (Exception e) {
@@ -438,4 +454,166 @@ public class ControladoraLogica {
     public List<Venta> listarVentas() {
         return controladoraPersistencia.listarVentas();
     }
+
+    // ---------------------------------------------Generacion de Factura ----------------------------------------------------------
+    private void generarFactura(HttpServletRequest request, HttpServletResponse response, int idFactura) {
+
+        Venta factura = buscarVentaFactura(idFactura);
+        if (factura != null) {
+            response.setContentType("application/pdf");
+            response.setHeader("Content-Disposition", "attachment; filename=\"factura.pdf\"");
+            try {
+                // Configuración inicial del documento
+                PdfWriter writer = new PdfWriter(response.getOutputStream());
+                PdfDocument pdf = new PdfDocument(writer);
+                Document document = new Document(pdf);
+                document.setMargins(50, 50, 50, 50);
+
+                // 1. ENCABEZADO DE LA FACTURA
+                addHeader(document, factura.getId());
+
+                // 2. DATOS DEL CLIENTE
+                addClientInfo(document, request, factura);
+
+                // 3. TABLA DE PRODUCTOS/SERVICIOS
+                addProductsTable(document, factura);
+
+                // 4. TOTALES Y DETALLES DE PAGO
+                addTotalsSection(document, factura);
+
+                // 5. PIE DE PÁGINA
+                addFooter(document);
+
+                document.close();
+
+            } catch (Exception e) {
+                PrintWriter out = null;
+                try {
+                    response.reset();
+                    response.setContentType("text/html");
+                    out = response.getWriter();
+                    out.println("<h1>Error al generar factura</h1>");
+                    out.println("<p>" + e.getMessage() + "</p>");
+                } catch (IOException ex) {
+                    Logger.getLogger(ControladoraLogica.class.getName()).log(Level.SEVERE, null, ex);
+                } finally {
+                    out.close();
+                }
+            }
+        }
+
+    }
+
+    //----------------------------------------------------------Metodos Usados para PErsonalizar la factura------------------------------------------------------
+    private void addHeader(Document document, int idFactura) {
+        // Logo y datos de la empresa
+        Paragraph header = new Paragraph()
+                .add(new Text("Factura \n").setFontSize(18).setBold())
+                .add(new Text("Nit: 12345678901\n").setFontSize(10))
+                .add(new Text("-N° de Factura : " + idFactura).setFontSize(10))
+                .add(new Text("-Cucuta, Norte de Santander-\n").setFontSize(10))
+                .add(new Text("Teléfono: (05) 555-5555\n").setFontSize(10))
+                .setTextAlignment(TextAlignment.CENTER);
+
+        document.add(header);
+
+        // Título Factura
+        document.add(new Paragraph("\nFACTURA ELECTRÓNICA\n")
+                .setTextAlignment(TextAlignment.CENTER)
+                .setBold()
+                .setFontSize(16));
+    }
+
+    private void addClientInfo(Document document, HttpServletRequest request, Venta factura) {
+        // Datos del cliente (puedes obtenerlos de request.getParameter())
+        float[] columnWidths = {2, 5};
+        Table clientTable = new Table(columnWidths);
+
+        clientTable.addCell(new Cell().add(new Paragraph("Cliente:").setBold()));
+        clientTable.addCell(new Cell().add(new Paragraph(factura.getDniCliente().getNombreCliente())));
+
+        clientTable.addCell(new Cell().add(new Paragraph("RUC/DNI:").setBold()));
+        clientTable.addCell(new Cell().add(new Paragraph(factura.getDniCliente().getDniCliente())));
+
+        clientTable.addCell(new Cell().add(new Paragraph("Fecha:").setBold()));
+        
+        DateTimeFormatter formatoFecha = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        String fechaFormateada = factura.getFechaVenta().format(formatoFecha);
+        clientTable.addCell(new Cell().add(new Paragraph(factura.getFechaVenta().format(formatoFecha))));
+
+        document.add(clientTable);
+        document.add(new Paragraph("\n"));
+    }
+
+    private void addProductsTable(Document document, Venta factura) {
+        // Tabla de productos
+        float[] columnWidths = {1, 3, 1, 1, 1};
+        Table productsTable = new Table(columnWidths);
+
+        // Encabezados de la tabla
+        productsTable.addHeaderCell(new Cell().add(new Paragraph("Código").setBold()));
+        productsTable.addHeaderCell(new Cell().add(new Paragraph("Nombre Producto").setBold()));
+        productsTable.addHeaderCell(new Cell().add(new Paragraph("Cantidad").setBold()));
+        productsTable.addHeaderCell(new Cell().add(new Paragraph("P. Unit").setBold()));
+        productsTable.addHeaderCell(new Cell().add(new Paragraph("Total").setBold()));
+
+        // Datos de ejemplo (puedes obtenerlos de una base de datos)
+        for (VentaDetallada detalle : factura.getVentaDetalladaList()) {
+            addProductRow(productsTable, detalle.getIdProducto().getCodigoBarra(), detalle.getIdProducto().getNombreProducto(), detalle.getCantidadVendida(), detalle.getPrecioProducto());
+        }
+
+        document.add(productsTable);
+    }
+
+    private void addProductRow(Table table, String code, String nombreProducto, BigDecimal quantity, BigDecimal price) {
+        table.addCell(new Cell().add(new Paragraph(code)));
+        table.addCell(new Cell().add(new Paragraph(nombreProducto)));
+        table.addCell(new Cell().add(new Paragraph(String.valueOf(quantity))).setTextAlignment(TextAlignment.RIGHT));
+        table.addCell(new Cell().add(new Paragraph(String.format("$ %.2f", price))).setTextAlignment(TextAlignment.RIGHT));
+        table.addCell(new Cell().add(new Paragraph(String.format("$ %.2f", quantity.multiply(price)))).setTextAlignment(TextAlignment.RIGHT));
+    }
+
+    private void addTotalsSection(Document document, Venta factura) {
+        float[] columnWidths = {4, 1, 1};
+        Table totalsTable = new Table(columnWidths);
+
+        BigDecimal total = factura.getTotalVenta();
+        BigDecimal igvRate = new BigDecimal("0.19"); // Tasa de IGV (19%)
+        BigDecimal subtotal = total.divide(igvRate.add(BigDecimal.ONE), 2, RoundingMode.HALF_UP);
+        BigDecimal igv = total.subtract(subtotal);
+
+        // Subtotal
+        totalsTable.addCell(new Cell(1, 2).add(new Paragraph("")));
+        totalsTable.addCell(new Cell().add(new Paragraph("Subtotal:").setBold()).setTextAlignment(TextAlignment.RIGHT));
+        totalsTable.addCell(new Cell().add(new Paragraph(String.format("$ %.2f", subtotal))).setTextAlignment(TextAlignment.RIGHT));
+
+        // IGV (19%)
+        totalsTable.addCell(new Cell(1, 2).add(new Paragraph("")));
+        totalsTable.addCell(new Cell().add(new Paragraph("IGV (19%):").setBold()).setTextAlignment(TextAlignment.RIGHT));
+        totalsTable.addCell(new Cell().add(new Paragraph(String.format("$ %.2f", igv))).setTextAlignment(TextAlignment.RIGHT));
+
+        // Total
+        totalsTable.addCell(new Cell(1, 2).add(new Paragraph("")));
+        totalsTable.addCell(new Cell().add(new Paragraph("TOTAL:").setBold()).setTextAlignment(TextAlignment.RIGHT));
+        totalsTable.addCell(new Cell().add(new Paragraph(String.format("$ %.2f", total)).setBold()).setTextAlignment(TextAlignment.RIGHT));
+
+        document.add(new Paragraph("\n"));
+        document.add(totalsTable);
+    }
+
+    private void addFooter(Document document) {
+        document.add(new Paragraph("\n\n"));
+        document.add(new Paragraph("Gracias por su compra!")
+                .setTextAlignment(TextAlignment.CENTER)
+                .setItalic());
+
+        document.add(new Paragraph("\n"));
+        document.add(new Paragraph("Condiciones de pago: 7 días netos")
+                .setFontSize(10));
+
+        document.add(new Paragraph("Válido como comprobante de pago")
+                .setFontSize(8)
+                .setTextAlignment(TextAlignment.CENTER));
+    }
+
 }

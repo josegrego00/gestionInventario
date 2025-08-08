@@ -14,10 +14,12 @@ servlets/SVEliminarProducto.class
 persistencia/ProductoJpaController.class
 persistencia/exceptions/NonexistentEntityException.class
 logica/Venta_.class
+servlets/SVListarVentasReportes.class
 logica/Categoria.class
 logica/VentaDetallada.class
 logica/Usuarios.class
 persistencia/ClienteJpaController.class
+.netbeans_automatic_build
 logica/Cliente_.class
 persistencia/VentaDetalladaJpaController.class
 servlets/SVListarProductos.class
