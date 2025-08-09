@@ -16,7 +16,7 @@ nombre_cliente varchar(200) not null
 );
 describe venta;
 Select * from venta_detallada;
-Select * from venta;
+Select * from producto;
 Select * from cliente;
 create table producto(
 id int primary key auto_increment,

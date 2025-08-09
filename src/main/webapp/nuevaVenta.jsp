@@ -18,97 +18,114 @@
             <h2>Registrar Venta</h2>
 
             <!-- Formulario principal -->
-            <form action="SVRegistrarVentaDetalle" method="post" onsubmit="return prepararDatosParaEnviar();">
 
-
-
-                <!-- Selección o registro de cliente -->
-                <div class="mb-4">
-                    <label>Cliente</label>
-                    <select id="clienteSelect" name="clienteId" class="form-select" onchange="mostrarFormularioCliente()">
-                        <option selected disabled value="">Seleccione un cliente</option>
-                        <%
-                            List<Cliente> clientes = (List<Cliente>) request.getAttribute("listaClientesExistentes");
-                            if (clientes != null) {
-                                for (Cliente c : clientes) {
-                        %>
-                        <option value="<%= c.getDniCliente()%>"><%= c.getNombreCliente()%> - <%= c.getDniCliente()%></option>
-                        <% }
+            <!-- Selección o registro de cliente -->
+            <div class="mb-4">
+                <label>Cliente</label>
+                <select id="clienteSelect" name="clienteId" class="form-select" onchange="mostrarFormularioCliente()">
+                    <option selected disabled value="">Seleccione un cliente</option>
+                    <%
+                        List<Cliente> clientes = (List<Cliente>) request.getAttribute("listaClientesExistentes");
+                        if (clientes != null) {
+                            for (Cliente c : clientes) {
+                    %>
+                    <option value="<%= c.getDniCliente()%>"><%= c.getNombreCliente()%> - <%= c.getDniCliente()%></option>
+                    <% }
                             } %>
-                        <option value="nuevo">Nuevo cliente</option>
+                    <option value="nuevo">Nuevo cliente</option>
+                </select>
+            </div>
+
+            <!-- Formulario para nuevo cliente -->
+            <div id="nuevoClienteForm" style="display:none;" class="border p-3 mb-4">
+                <h5>Nuevo Cliente</h5>
+                <div class="row mb-2">
+                    <div class="col-md-6">
+                        <label>Nombre</label>
+                        <input type="text" name="nuevoNombre" class="form-control">
+                    </div>
+                    <div class="col-md-6">
+                        <label>DNI</label>
+                        <input type="text" name="nuevoDni" class="form-control">
+                    </div>
+                </div>
+            </div>
+            <!-- Sección para agregar productos -->
+            <div class="row mb-3">
+                <div class="col-md-5">
+                    <label>Producto</label>
+                    <select id="productoSelect" class="form-select">
+                        <option selected disabled value="">Seleccione</option>
+                        <%
+                            List<Producto> productos = (List<Producto>) request.getAttribute("listaProductosExistentes");
+                            if (productos != null) {
+                                for (Producto p : productos) {
+                        %>
+                        <option value="<%= p.getCodigoBarra()%>" data-nombre="<%= p.getNombreProducto()%>" data-precio="<%= p.getCostoProducto().doubleValue()%>">
+                            <%= p.getNombreProducto()%> - Valor - $<%= p.getCostoProducto()%>
+                        </option>
+                        <% }
+                                }%>
                     </select>
                 </div>
 
-                <!-- Formulario para nuevo cliente -->
-                <div id="nuevoClienteForm" style="display:none;" class="border p-3 mb-4">
-                    <h5>Nuevo Cliente</h5>
-                    <div class="row mb-2">
-                        <div class="col-md-6">
-                            <label>Nombre</label>
-                            <input type="text" name="nuevoNombre" class="form-control">
-                        </div>
-                        <div class="col-md-6">
-                            <label>DNI</label>
-                            <input type="text" name="nuevoDni" class="form-control">
-                        </div>
-                    </div>
-                </div>
-                <!-- Sección para agregar productos -->
-                <div class="row mb-3">
-                    <div class="col-md-5">
-                        <label>Producto</label>
-                        <select id="productoSelect" class="form-select">
-                            <option selected disabled value="">Seleccione</option>
-                            <%
-                                List<Producto> productos = (List<Producto>) request.getAttribute("listaProductosExistentes");
-                                if (productos != null) {
-                                    for (Producto p : productos) {
-                            %>
-                            <option value="<%= p.getCodigoBarra()%>" data-nombre="<%= p.getNombreProducto()%>" data-precio="<%= p.getCostoProducto().doubleValue()%>">
-                                <%= p.getNombreProducto()%> - Valor - $<%= p.getCostoProducto()%>
-                            </option>
-                            <% }
-                                }%>
-                        </select>
-                    </div>
-
-                    <div class="col-md-3">
-                        <label>Cantidad</label>
-                        <input type="number" id="cantidadInput" class="form-control" min="1" value="1">
-                    </div>
-
-                    <div class="col-md-4 d-flex align-items-end">
-                        <button type="button" class="btn btn-primary w-100" onclick="agregarProducto()">Agregar a Detalle</button>
-                    </div>
+                <div class="col-md-3">
+                    <label>Cantidad</label>
+                    <input type="number" id="cantidadInput" class="form-control" min="1" value="1">
                 </div>
 
-                <!-- Tabla de detalles -->
-                <table class="table table-bordered" id="detalleTabla">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Producto</th>
-                            <th>Cantidad</th>
-                            <th>Precio Unitario</th>
-                            <th>Subtotal</th>
-                            <th>Eliminar</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-
-                <!-- Campo para enviar datos serializados -->
-                <input type="hidden" name="detalleJson" id="detalleJson">
-
-                <!-- Total -->
-                <div class="mb-3">
-                    <label>Total: $ </label>
-                    <input type="text" id="totalGeneral" name="totalGeneral" class="form-control" readonly>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="button" class="btn btn-primary w-100" onclick="agregarProducto()">Agregar a Detalle</button>
                 </div>
+            </div>
 
-                <!-- Botones -->
-                <button type="submit" class="btn btn-success">Registrar Venta</button>
-                <a href="ventas.jsp" class="btn btn-secondary">Cancelar</a>
-            </form>
+            <!-- Tabla de detalles -->
+            <table class="table table-bordered" id="detalleTabla">
+                <thead class="table-light">
+                    <tr>
+                        <th>Producto</th>
+                        <th>Cantidad</th>
+                        <th>Precio Unitario</th>
+                        <th>Subtotal</th>
+                        <th>Eliminar</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+
+            <!-- Campo para enviar datos serializados -->
+            <input type="hidden" name="detalleJson" id="detalleJson">
+
+            <!-- Total -->
+            <div class="mb-3">
+                <label>Total: $ </label>
+                <input type="text" id="totalGeneral" name="totalGeneral" class="form-control" readonly>
+            </div>
+            <!-- Botones - Versión Mejorada -->
+            <div class="d-flex justify-content-between mt-4">
+                <!-- Formulario Guardar -->
+                <form action="SVRegistrarVentaDetalle" method="post" onsubmit="return prepararDatosParaEnviar();" class="me-2">
+                    <button type="submit" name="accion" value="guardar" class="btn btn-primary">
+                        <i class="bi bi-save"></i> Guardar Factura
+                    </button>
+                    <input type="hidden" name="detalleJson" id="detalleJson">
+                </form>
+
+                <!-- Grupo de botones secundarios -->
+                <div>
+                    <!-- Formulario PDF -->
+                    <form action="SVGenerarPDFFactura" method="get" class="d-inline me-2">
+                        <button type="submit" name="accion" value="generar_pdf" class="btn btn-success">
+                            <i class="bi bi-file-earmark-pdf"></i> Generar PDF
+                        </button>
+                    </form>
+
+                    <!-- Botón Cancelar -->
+                    <a href="SVListarVentasReportes" class="btn btn-secondary">
+                        <i class="bi bi-x-circle"></i> Cancelar
+                    </a>
+                </div>
+            </div>
         </div>
 
         <!-- --------------------- JavaScript -------------------- -->
@@ -202,8 +219,6 @@
                     nuevoForm.style.display = "none";
                 }
             }
-
-
         </script>
 
     </body>

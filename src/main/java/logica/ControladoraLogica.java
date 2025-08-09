@@ -419,9 +419,9 @@ public class ControladoraLogica {
         return venta.getId();
     }
 
-    public boolean procesarDetallesVenta(String detalleJson, int idFactura, HttpServletRequest request, HttpServletResponse response) {
+    public void procesarDetallesVenta(String detalleJson, int idFactura) {
         if (detalleJson == null || detalleJson.trim().isEmpty()) {
-            return false;
+            return;
         }
 
         try {
@@ -438,12 +438,11 @@ public class ControladoraLogica {
                 ventaDetallada.setCantidadVendida(BigDecimal.valueOf(item.getCantidad()));
                 ventaDetallada.setPrecioProducto(BigDecimal.valueOf(item.getPrecio()));
                 controladoraPersistencia.guardarDetalleVenta(ventaDetallada);
-                generarFactura(request, response, idFactura);
             }
-            return true;
+
+
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
         }
     }
 
@@ -456,7 +455,7 @@ public class ControladoraLogica {
     }
 
     // ---------------------------------------------Generacion de Factura ----------------------------------------------------------
-    private void generarFactura(HttpServletRequest request, HttpServletResponse response, int idFactura) {
+    public void generarFactura(HttpServletResponse response, int idFactura) throws IOException {
 
         Venta factura = buscarVentaFactura(idFactura);
         if (factura != null) {
@@ -473,7 +472,7 @@ public class ControladoraLogica {
                 addHeader(document, factura.getId());
 
                 // 2. DATOS DEL CLIENTE
-                addClientInfo(document, request, factura);
+                addClientInfo(document, factura);
 
                 // 3. TABLA DE PRODUCTOS/SERVICIOS
                 addProductsTable(document, factura);
@@ -487,44 +486,45 @@ public class ControladoraLogica {
                 document.close();
 
             } catch (Exception e) {
-                PrintWriter out = null;
-                try {
+                if (!response.isCommitted()) { // ← Verifica si la respuesta no se ha enviado
                     response.reset();
                     response.setContentType("text/html");
-                    out = response.getWriter();
-                    out.println("<h1>Error al generar factura</h1>");
-                    out.println("<p>" + e.getMessage() + "</p>");
-                } catch (IOException ex) {
-                    Logger.getLogger(ControladoraLogica.class.getName()).log(Level.SEVERE, null, ex);
-                } finally {
-                    out.close();
+                    try (PrintWriter out = response.getWriter()) {
+                        out.println("<h1>Error al generar factura</h1>");
+                        out.println("<p>" + e.getMessage() + "</p>");
+                    } catch (IOException ex) {
+                        Logger.getLogger(ControladoraLogica.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                } else {
+                    // Logear el error, pero no intentar escribir en la respuesta
+                    Logger.getLogger(getClass().getName()).log(Level.SEVERE, "Error al generar factura (respuesta ya comprometida)", e);
                 }
+                throw new IOException("Error generando factura", e);
             }
         }
-
     }
 
-    //----------------------------------------------------------Metodos Usados para PErsonalizar la factura------------------------------------------------------
+//----------------------------------------------------------Metodos Usados para PErsonalizar la factura------------------------------------------------------
     private void addHeader(Document document, int idFactura) {
         // Logo y datos de la empresa
         Paragraph header = new Paragraph()
                 .add(new Text("Factura \n").setFontSize(18).setBold())
                 .add(new Text("Nit: 12345678901\n").setFontSize(10))
-                .add(new Text("-N° de Factura : " + idFactura).setFontSize(10))
-                .add(new Text("-Cucuta, Norte de Santander-\n").setFontSize(10))
+                .add(new Text("N° de Factura : " + idFactura + "\n").setFontSize(10))
+                .add(new Text("Cucuta, Norte de Santander\n").setFontSize(10))
                 .add(new Text("Teléfono: (05) 555-5555\n").setFontSize(10))
                 .setTextAlignment(TextAlignment.CENTER);
 
         document.add(header);
 
         // Título Factura
-        document.add(new Paragraph("\nFACTURA ELECTRÓNICA\n")
+        document.add(new Paragraph("\nFACTURA ELECTRÓNICA N° : " + idFactura + "\n")
                 .setTextAlignment(TextAlignment.CENTER)
                 .setBold()
                 .setFontSize(16));
     }
 
-    private void addClientInfo(Document document, HttpServletRequest request, Venta factura) {
+    private void addClientInfo(Document document, Venta factura) {
         // Datos del cliente (puedes obtenerlos de request.getParameter())
         float[] columnWidths = {2, 5};
         Table clientTable = new Table(columnWidths);
@@ -536,7 +536,7 @@ public class ControladoraLogica {
         clientTable.addCell(new Cell().add(new Paragraph(factura.getDniCliente().getDniCliente())));
 
         clientTable.addCell(new Cell().add(new Paragraph("Fecha:").setBold()));
-        
+
         DateTimeFormatter formatoFecha = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
         String fechaFormateada = factura.getFechaVenta().format(formatoFecha);
         clientTable.addCell(new Cell().add(new Paragraph(factura.getFechaVenta().format(formatoFecha))));
