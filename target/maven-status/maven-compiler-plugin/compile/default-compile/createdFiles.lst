@@ -42,5 +42,6 @@ logica/Producto.class
 logica/ControladoraLogica.class
 persistencia/ControladoraPersistencia.class
 persistencia/exceptions/PreexistingEntityException.class
+servlets/SVGenerarFacturaPDF.class
 logica/Categoria_.class
 logica/Rol.class
