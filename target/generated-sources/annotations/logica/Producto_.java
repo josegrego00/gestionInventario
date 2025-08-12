@@ -10,7 +10,7 @@ import logica.Categoria;
 import logica.Proveedor;
 import logica.VentaDetallada;
 
-@Generated(value="EclipseLink-2.7.10.v20211216-rNA", date="2025-08-11T11:34:08")
+@Generated(value="EclipseLink-2.7.10.v20211216-rNA", date="2025-08-12T12:04:33")
 @StaticMetamodel(Producto.class)
 public class Producto_ { 
 

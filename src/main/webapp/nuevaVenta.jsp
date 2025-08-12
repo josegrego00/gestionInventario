@@ -104,21 +104,33 @@
                     <label>Total: $ </label>
                     <input type="text" id="totalGeneral" name="totalGeneral" class="form-control" readonly>
                 </div>
-                <!-- Forma de pago -->
-                <div class="mb-3">
-                    <label for="formaPago">Forma de Pago</label>
-                    <select id="formaPago" name="formaPago" class="form-select" onchange="mostrarCamposPago()">
-                        <option selected disabled value="">Seleccione</option>
-                        <option value="efectivo">Efectivo</option>
-                        <option value="transferencia">Transferencia</option>
-                    </select>
+
+                <!-- Monto efectivo -->
+                <div class="mb-3" id="grupoMontoEfectivo" style="display:none;">
+                    <label>Monto en Efectivo</label>
+                    <input type="number" step="0.01" id="montoEfectivo" name="montoEfectivo" class="form-control" min="0" oninput="calcularCambio()">
                 </div>
+
+                <!-- Monto transferencia -->
+                <div class="mb-3" id="grupoMontoTransferencia" style="display:none;">
+                    <label>Monto en Transferencia</label>
+                    <input type="number" step="0.01" id="montoTransferencia" name="montoTransferencia" class="form-control" min="0" oninput="calcularCambio()">
+                </div>
+
+                <!-- Forma de pago, aqui se indica como la persona quiere pagar -->
+                <select id="formaPago" name="formaPago" class="form-select" onchange="mostrarCamposPago()">
+                    <option selected disabled value="">Seleccione</option>
+                    <option value="efectivo">Efectivo</option>
+                    <option value="transferencia">Transferencia</option>
+                    <option value="mixto">Efectivo + Transferencia</option> <!-- Nuevo -->
+                </select>
 
                 <!-- Monto entregado -->
                 <div class="mb-3" id="grupoMontoEntregado" style="display:none;">
                     <label>Monto Entregado por el Cliente</label>
                     <input type="number" step="0.01" id="montoEntregado" name="montoEntregado" class="form-control" min="0" oninput="calcularCambio()">
                 </div>
+
 
                 <!-- Vuelto / Diferencia -->
                 <div class="mb-3" id="grupoCambio" style="display:none;">
@@ -216,9 +228,23 @@
             return false;
         }
 
+        const formaPago = document.getElementById("formaPago").value;
+        const total = parseFloat(document.getElementById("totalGeneral").value) || 0;
+        const entregado = parseFloat(document.getElementById("montoEntregado").value) || 0;
+
+        // Validar monto entregado cuando es efectivo
+        if (formaPago === "efectivo") {
+            if (entregado < total) {
+                alert("El monto entregado debe ser igual o mayor al total.");
+                return false;
+            }
+        }
+
+
         document.getElementById("detalleJson").value = JSON.stringify(detalle);
         return true;
     }
+
     function confirmarCancelacion() {
         return confirm("¿Está seguro que desea Eliminar este Producto de la factura? ");
     }
@@ -236,34 +262,68 @@
 
     function mostrarCamposPago() {
         const formaPago = document.getElementById("formaPago").value;
-        const grupoMonto = document.getElementById("grupoMontoEntregado");
+        const efectivo = document.getElementById("grupoMontoEfectivo");
+        const transferencia = document.getElementById("grupoMontoTransferencia");
         const grupoCambio = document.getElementById("grupoCambio");
 
-        if (formaPago === "efectivo" || formaPago === "transferencia") {
-            grupoMonto.style.display = "block";
+        // Limpiar siempre los valores al cambiar forma de pago
+        document.getElementById("montoEfectivo").value = "";
+        document.getElementById("montoTransferencia").value = "";
+        document.getElementById("cambio").value = "";
+
+
+        if (formaPago === "efectivo") {
+            efectivo.style.display = "block";
+            transferencia.style.display = "none";
             grupoCambio.style.display = "block";
-            document.getElementById("labelCambio").textContent = formaPago === "efectivo" ? "Vuelto: $" : "Diferencia: $";
+            document.getElementById("labelCambio").textContent = "Vuelto: $";
+        } else if (formaPago === "transferencia") {
+            efectivo.style.display = "none";
+            transferencia.style.display = "block";
+            grupoCambio.style.display = "block";
+            document.getElementById("labelCambio").textContent = "Diferencia: $";
+        } else if (formaPago === "mixto") { // Nuevo tipo de pago
+            efectivo.style.display = "block";
+            transferencia.style.display = "block";
+            grupoCambio.style.display = "block";
+            document.getElementById("labelCambio").textContent = "Vuelto / Diferencia: $";
         } else {
-            grupoMonto.style.display = "none";
+            efectivo.style.display = "none";
+            transferencia.style.display = "none";
             grupoCambio.style.display = "none";
         }
     }
 
     function calcularCambio() {
         const total = parseFloat(document.getElementById("totalGeneral").value) || 0;
-        const entregado = parseFloat(document.getElementById("montoEntregado").value) || 0;
-        const formaPago = document.getElementById("formaPago").value;
-        let resultado = 0;
+        const montoEfectivo = parseFloat(document.getElementById("montoEfectivo")?.value) || 0;
+        const montoTransferencia = parseFloat(document.getElementById("montoTransferencia")?.value) || 0;
 
-        if (formaPago === "efectivo") {
-            resultado = entregado - total; // cambio
-        } else if (formaPago === "transferencia") {
-            resultado = total - entregado; // diferencia
-        }
+        const totalPagado = montoEfectivo + montoTransferencia;
+        const resultado = totalPagado - total;
 
         document.getElementById("cambio").value = resultado.toFixed(2);
     }
 
+    function prepararDatosParaEnviar() {
+        if (detalle.length === 0) {
+            alert("Debe agregar al menos un producto.");
+            return false;
+        }
+
+        const total = parseFloat(document.getElementById("totalGeneral").value) || 0;
+        const montoEfectivo = parseFloat(document.getElementById("montoEfectivo")?.value) || 0;
+        const montoTransferencia = parseFloat(document.getElementById("montoTransferencia")?.value) || 0;
+        const totalPagado = montoEfectivo + montoTransferencia;
+
+        if (totalPagado < total) {
+            alert("El monto total pagado no puede ser menor al total de la venta.");
+            return false;
+        }
+
+        document.getElementById("detalleJson").value = JSON.stringify(detalle);
+        return true;
+    }
 
 
 
@@ -301,18 +361,18 @@
     }
 
     function confirmarGuardar(generar) {
-        
+
         const modal = bootstrap.Modal.getInstance(document.getElementById('modalConfirmarPDF'));
         modal.hide();
         document.getElementById("generarPDF").value = generar ? "true" : "false";
         document.getElementById("formVenta").submit();
+
     }
 
 </script>
 
 <!-- Bootstrap JS (necesario para modal) -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
 
 </body>
 </html>
