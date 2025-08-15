@@ -403,7 +403,7 @@ public class ControladoraLogica {
     }
 
     //----------------------------------Ventas ---------------------------------------------------------------
-    public int crearFactura(String dniCliente, double totalFactura, LocalDateTime horaActualFactura) {
+    public int crearFactura(String dniCliente, double totalFactura, LocalDateTime horaActualFactura, String formaPago, String estado) {
 
         // Se Crean las VEnta, es decir numero de factura
         Venta venta = new Venta();
@@ -414,7 +414,8 @@ public class ControladoraLogica {
         venta.setFechaVenta(horaActualFactura);
         //se convierte el double a un bigdecimal
         venta.setTotalVenta(BigDecimal.valueOf(totalFactura));
-
+        venta.setTipoPago(formaPago);
+        venta.setEstadoFactura(Boolean.parseBoolean(estado));
         controladoraPersistencia.crearFactura(venta);
         return venta.getId();
     }
@@ -484,7 +485,8 @@ public class ControladoraLogica {
                 addFooter(document);
 
                 document.close();
-
+        
+                
             } catch (Exception e) {
                 if (!response.isCommitted()) { // ← Verifica si la respuesta no se ha enviado
                     response.reset();
@@ -502,6 +504,7 @@ public class ControladoraLogica {
                 throw new IOException("Error generando factura", e);
             }
         }
+        
     }
 
 //----------------------------------------------------------Metodos Usados para PErsonalizar la factura------------------------------------------------------

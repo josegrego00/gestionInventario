@@ -31,6 +31,7 @@ public class VentaJpaController implements Serializable {
     }
 
     public VentaJpaController() {
+    
     this.emf=Persistence.createEntityManagerFactory("gestionPU");
     }
     

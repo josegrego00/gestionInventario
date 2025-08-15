@@ -6,8 +6,9 @@ show tables;
 describe venta_detallada;
 describe venta;
 
-alter table venta 
-add constraint fk_venta_cliente foreign key(dniCliente) references cliente(dniCliente) ;
+set SQL_SAFE_UPDATES=1;
+update venta 
+set estado_factura=1 where estado_factura is null;
 
 create table cliente(
 id int primary key auto_increment,

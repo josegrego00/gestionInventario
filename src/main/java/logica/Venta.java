@@ -25,6 +25,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  *
@@ -36,7 +37,9 @@ import javax.validation.constraints.NotNull;
     @NamedQuery(name = "Venta.findAll", query = "SELECT v FROM Venta v"),
     @NamedQuery(name = "Venta.findById", query = "SELECT v FROM Venta v WHERE v.id = :id"),
     @NamedQuery(name = "Venta.findByFechaVenta", query = "SELECT v FROM Venta v WHERE v.fechaVenta = :fechaVenta"),
-    @NamedQuery(name = "Venta.findByTotalVenta", query = "SELECT v FROM Venta v WHERE v.totalVenta = :totalVenta")})
+    @NamedQuery(name = "Venta.findByTotalVenta", query = "SELECT v FROM Venta v WHERE v.totalVenta = :totalVenta"),
+    @NamedQuery(name = "Venta.findByTipoPago", query = "SELECT v FROM Venta v WHERE v.tipoPago = :tipoPago"),
+    @NamedQuery(name = "Venta.findByEstadoFactura", query = "SELECT v FROM Venta v WHERE v.estadoFactura = :estadoFactura")})
 public class Venta implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -54,6 +57,11 @@ public class Venta implements Serializable {
     @NotNull
     @Column(name = "total_venta")
     private BigDecimal totalVenta;
+    @Size(max = 30)
+    @Column(name = "tipo_pago")
+    private String tipoPago;
+    @Column(name = "estado_factura")
+    private Boolean estadoFactura;
     @JoinColumn(name = "dniCliente", referencedColumnName = "dniCliente")
     @ManyToOne(optional = false)
     private Cliente dniCliente;
@@ -95,6 +103,22 @@ public class Venta implements Serializable {
 
     public void setTotalVenta(BigDecimal totalVenta) {
         this.totalVenta = totalVenta;
+    }
+
+    public String getTipoPago() {
+        return tipoPago;
+    }
+
+    public void setTipoPago(String tipoPago) {
+        this.tipoPago = tipoPago;
+    }
+
+    public Boolean getEstadoFactura() {
+        return estadoFactura;
+    }
+
+    public void setEstadoFactura(Boolean estadoFactura) {
+        this.estadoFactura = estadoFactura;
     }
 
     public Cliente getDniCliente() {

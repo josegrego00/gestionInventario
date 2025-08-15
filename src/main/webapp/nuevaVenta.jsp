@@ -14,12 +14,24 @@
 
         <jsp:include page="index.jsp" />
 
+        <%-- Mensaje de éxito --%>
+        <% if (session.getAttribute("mensajeExito") != null) {%>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <%= session.getAttribute("mensajeExito")%>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <% session.removeAttribute("mensajeExito"); // Limpia después de mostrar %>
+        <% } %>
+        
+        
         <div class="container mt-4">
             <h2>Registrar Venta</h2>
 
             <!-- Formulario principal -->
             <form id="formVenta" action="SVRegistrarVentaDetalle" method="post" onsubmit="return prepararDatosParaEnviar();">
                 <input type="hidden" name="generarPDF" id="generarPDF">
+                <!-- Dentro de tu formulario principal -->
+                <input type="hidden" id="idFacturaHidden" name="idFactura">
                 <!-- Selección o registro de cliente -->
                 <div class="mb-4">
                     <label>Cliente</label>
@@ -140,7 +152,7 @@
 
                 <!-- Botones -->
                 <div class="d-flex justify-content-between mt-4">
-                    <button type="button" name="accion" value="guardar" class="btn btn-primary"  onclick="abrirModalPDF()">
+                    <button type="submit" name="accion" value="guardar" class="btn btn-primary" >
                         <i class="bi bi-save"></i> Guardar Factura
                     </button>
                     <a href="SVListarVentasReportes" class="btn btn-secondary">
@@ -325,48 +337,17 @@
         return true;
     }
 
-
-
-
-
-
-</script>
-<!-- Modal Confirmación PDF -->
-<div class="modal fade" id="modalConfirmarPDF" tabindex="-1" aria-labelledby="modalPDFLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalPDFLabel">Generar PDF</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-            </div>
-            <div class="modal-body">
-                ¿Desea generar el PDF de la factura después de guardarla?
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="confirmarGuardar(false)">No</button>
-                <button type="button" class="btn btn-success" onclick="confirmarGuardar(true)">Sí</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-<script>
-    function abrirModalPDF() {
-        if (!prepararDatosParaEnviar())
-            return;
-        const modal = new bootstrap.Modal(document.getElementById('modalConfirmarPDF'));
-        modal.show();
-
-    }
-
     function confirmarGuardar(generar) {
-
         const modal = bootstrap.Modal.getInstance(document.getElementById('modalConfirmarPDF'));
         modal.hide();
-        document.getElementById("generarPDF").value = generar ? "true" : "false";
-        document.getElementById("formVenta").submit();
 
+        if (generar) {
+            const idFactura = document.getElementById('idFacturaHidden').value;
+            window.location.href = "SVGenerarFacturaPDF?idFactura=" + idFactura;
+        } else {
+            // Recargar limpia para nueva venta
+            window.location.href = "SVListarProductosVenta";
+        }
     }
 
 </script>

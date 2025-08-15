@@ -23,6 +23,9 @@
                         <th>Fecha</th>
                         <th>Nombre Cliente</th>
                         <th>Total</th>
+                        <th>Tipo Pago</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -47,8 +50,10 @@
                         </td>
                         <td><%= venta.getDniCliente().getNombreCliente()%></td>
                         <td><%= venta.getTotalVenta()%></td>
+                        <td><%= venta.getTipoPago()%></td>
+                        <td><%=venta.getEstadoFactura() ? "Activo" : "Anulada"%></td>
                         <td>
-                            <a href="SVEditarProductoConCodigoBarra?codigoBarra=<%= venta.getId()%>" class="btn btn-warning btn-sm" op>Re-Imprimir</a>
+                            <a href="SVGenerarFacturaPDF?idFactura=<%= venta.getId()%>" class="btn btn-warning btn-sm" op>Generar PDF</a>
                             <a href="SVEliminarProducto?codigoBarra=<%= venta.getId()%>" class="btn btn-danger btn-sm" onclick="return confirmarCancelacion()">Anular Factura</a>
                         </td>
                     </tr>
