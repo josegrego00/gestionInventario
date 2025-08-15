@@ -3,6 +3,7 @@
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/servlets/SVListarCategoriaYProveedor.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/servlets/SVListarVentasReportes.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/persistencia/exceptions/IllegalOrphanException.java
+/home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/servlets/SVAnularVenta.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/logica/Venta.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/servlets/SVActualizarProductoEditar.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/persistencia/ProductoJpaController.java

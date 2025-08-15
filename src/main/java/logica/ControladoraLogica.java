@@ -454,6 +454,19 @@ public class ControladoraLogica {
     public List<Venta> listarVentas() {
         return controladoraPersistencia.listarVentas();
     }
+    
+    
+    public boolean anularFactura(String idFactura) {
+          Venta factura=buscarVentaFactura(Integer.parseInt(idFactura));
+           if(factura!=null){
+               factura.setEstadoFactura(false);
+               controladoraPersistencia.actualizarFactura(factura);
+               return true;
+           }              
+              return false;
+          
+    }
+
 
     // ---------------------------------------------Generacion de Factura ----------------------------------------------------------
     public void generarFactura(HttpServletResponse response, int idFactura) throws IOException {
@@ -507,6 +520,20 @@ public class ControladoraLogica {
         
     }
 
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 //----------------------------------------------------------Metodos Usados para PErsonalizar la factura------------------------------------------------------
     private void addHeader(Document document, int idFactura) {
         // Logo y datos de la empresa
@@ -619,4 +646,5 @@ public class ControladoraLogica {
                 .setTextAlignment(TextAlignment.CENTER));
     }
 
+    
 }

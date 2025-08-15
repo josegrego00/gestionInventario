@@ -120,6 +120,12 @@ public class ControladoraPersistencia {
         clienteJpaController.create(clienteNuevo);
     }
 
+    
+    
+    
+    
+    
+    //-------------------------Persistencia de Venta o Facturas-----------------------------------------
     public void crearFactura(Venta venta) {
         ventaJpaController.create(venta);
     }
@@ -134,6 +140,16 @@ public class ControladoraPersistencia {
 
     public List<Venta> listarVentas() {
         return ventaJpaController.findVentaEntities();
+    }
+
+    public void actualizarFactura(Venta venta) {
+        try {        
+            ventaJpaController.edit(venta);
+        } catch (NonexistentEntityException ex) {
+            Logger.getLogger(ControladoraPersistencia.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            Logger.getLogger(ControladoraPersistencia.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
 }
