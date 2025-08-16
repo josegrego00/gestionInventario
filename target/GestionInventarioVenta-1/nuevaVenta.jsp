@@ -22,8 +22,8 @@
         </div>
         <% session.removeAttribute("mensajeExito"); // Limpia después de mostrar %>
         <% } %>
-        
-        
+
+
         <div class="container mt-4">
             <h2>Registrar Venta</h2>
 
@@ -132,9 +132,9 @@
                 <!-- Forma de pago, aqui se indica como la persona quiere pagar -->
                 <select id="formaPago" name="formaPago" class="form-select" onchange="mostrarCamposPago()">
                     <option selected disabled value="">Seleccione</option>
-                    <option value="efectivo">Efectivo</option>
-                    <option value="transferencia">Transferencia</option>
-                    <option value="mixto">Efectivo + Transferencia</option> <!-- Nuevo -->
+                    <option value="Efectivo">Efectivo</option>
+                    <option value="Transferencia">Transferencia</option>
+                    <option value="Mixto">Efectivo + Transferencia</option> <!-- Nuevo -->
                 </select>
 
                 <!-- Monto entregado -->
@@ -284,17 +284,17 @@
         document.getElementById("cambio").value = "";
 
 
-        if (formaPago === "efectivo") {
+        if (formaPago === "Efectivo") {
             efectivo.style.display = "block";
             transferencia.style.display = "none";
             grupoCambio.style.display = "block";
             document.getElementById("labelCambio").textContent = "Vuelto: $";
-        } else if (formaPago === "transferencia") {
+        } else if (formaPago === "Transferencia") {
             efectivo.style.display = "none";
             transferencia.style.display = "block";
             grupoCambio.style.display = "block";
             document.getElementById("labelCambio").textContent = "Diferencia: $";
-        } else if (formaPago === "mixto") { // Nuevo tipo de pago
+        } else if (formaPago === "Mixto") { // Nuevo tipo de pago
             efectivo.style.display = "block";
             transferencia.style.display = "block";
             grupoCambio.style.display = "block";

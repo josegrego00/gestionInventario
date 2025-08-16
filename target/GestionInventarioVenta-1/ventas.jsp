@@ -29,6 +29,25 @@
         <div class="container mt-4">
             <h2 class="mb-3">Historial de Ventas</h2>
             <a href="SVListarProductosVenta" class="btn btn-primary mb-3">Registrar Venta</a>
+
+            <!-- Botones del filtro.-->
+            <form method="GET" action="SVListarVentasReportes" class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <input type="text" name="cliente" class="form-control" placeholder="Nombre del cliente" 
+                           value="<%= request.getParameter("cliente") != null ? request.getParameter("cliente") : ""%>">
+                </div>
+                <div class="col-md-4">
+                    <input type="date" name="fecha" class="form-control"
+                           value="<%= request.getParameter("fecha") != null ? request.getParameter("fecha") : ""%>">
+                </div>
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-primary">Filtrar</button>
+                    <a href="SVListarVentasReportes" class="btn btn-secondary">Limpiar</a>
+                </div>
+            </form>
+
+
+
             <table class="table table-striped">
                 <thead>
                     <tr>
@@ -85,14 +104,60 @@
                         }
                     %></tbody>
             </table>
-        </div>
 
-        <script>
-            function confirmarCancelacion() {
-                return confirm("¿Está seguro que desea Anular esta factura? ");
-            }
+            <!--Ajuste con Botones para que se pasen con paginacion -->
+
+            <!--Ajuste con Botones para que se pasen con paginacion -->
+            <div class="d-flex justify-content-center mt-4">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+
+                        <%
+                            int paginaActual = (int) request.getAttribute("paginaActual");
+                            int totalPaginas = (int) request.getAttribute("totalPaginas");
+                            String clienteParam = request.getParameter("cliente") != null ? "&cliente=" + request.getParameter("cliente") : "";
+                            String fechaParam = request.getParameter("fecha") != null ? "&fecha=" + request.getParameter("fecha") : "";
+                            String extraParams = clienteParam + fechaParam;
+                        %>
+
+                        <!-- Botón Anterior -->
+                        <li class="page-item <%= (paginaActual == 1) ? "disabled" : ""%>">
+                            <a class="page-link" 
+                               href="SVListarVentasReportes?page=<%= paginaActual - 1%><%= extraParams%>">
+                                Anterior
+                            </a>
+                        </li>
+
+                        <!-- Números de página -->
+                        <%
+                            for (int i = 1; i <= totalPaginas; i++) {
+                        %>
+                        <li class="page-item <%= (i == paginaActual) ? "active" : ""%>">
+                            <a class="page-link" href="SVListarVentasReportes?page=<%= i%><%= extraParams%>">
+                                <%= i%>
+                            </a>
+                        </li>
+                        <%
+                            }
+                        %>
+
+                        <!-- Botón Siguiente -->
+                        <li class="page-item <%= (paginaActual == totalPaginas) ? "disabled" : ""%>">
+                            <a class="page-link" 
+                               href="SVListarVentasReportes?page=<%= paginaActual + 1%><%= extraParams%>">
+                                Siguiente
+                            </a>
+                        </li>
+
+                    </ul>
+                </nav>
+            </div>
+            <script>
+                function confirmarCancelacion() {
+                    return confirm("¿Está seguro que desea Anular esta factura? ");
+                }
 
 
-        </script>        
+            </script>        
     </body>
 </html>

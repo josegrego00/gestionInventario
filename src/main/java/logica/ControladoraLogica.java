@@ -48,6 +48,10 @@ public class ControladoraLogica {
         controladoraPersistencia = new ControladoraPersistencia();
     }
 
+    public long contarVentas(String cliente, String fecha) {
+        return controladoraPersistencia.contarVenta(cliente, fecha);
+    }
+
     //--------------------------- Logica Para todo------------------------------------
     // Este sera un metodo en la cual se le puedo ingersar n texto sea 
     //el q sea, con el fin de evitar errorres y que la base de datos se llene de basura
@@ -403,7 +407,7 @@ public class ControladoraLogica {
     }
 
     //----------------------------------Ventas ---------------------------------------------------------------
-    public int crearFactura(String dniCliente, double totalFactura, LocalDateTime horaActualFactura, String formaPago, String estado) {
+    public int crearFactura(String dniCliente, double totalFactura, LocalDateTime horaActualFactura, String formaPago, boolean estado) {
 
         // Se Crean las VEnta, es decir numero de factura
         Venta venta = new Venta();
@@ -415,7 +419,7 @@ public class ControladoraLogica {
         //se convierte el double a un bigdecimal
         venta.setTotalVenta(BigDecimal.valueOf(totalFactura));
         venta.setTipoPago(formaPago);
-        venta.setEstadoFactura(Boolean.parseBoolean(estado));
+        venta.setEstadoFactura(estado);
         controladoraPersistencia.crearFactura(venta);
         return venta.getId();
     }
@@ -441,7 +445,6 @@ public class ControladoraLogica {
                 controladoraPersistencia.guardarDetalleVenta(ventaDetallada);
             }
 
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -454,19 +457,28 @@ public class ControladoraLogica {
     public List<Venta> listarVentas() {
         return controladoraPersistencia.listarVentas();
     }
-    
-    
-    public boolean anularFactura(String idFactura) {
-          Venta factura=buscarVentaFactura(Integer.parseInt(idFactura));
-           if(factura!=null){
-               factura.setEstadoFactura(false);
-               controladoraPersistencia.actualizarFactura(factura);
-               return true;
-           }              
-              return false;
-          
+
+    public List<Venta> listarVentasParaPaginado(String cliente, String fechaStr, int offset, int registrosPorPagina) {
+        LocalDateTime fecha = null;
+
+        if (fechaStr != null && !fechaStr.trim().isEmpty()) {
+            LocalDate localDate = LocalDate.parse(fechaStr); // Formato ISO yyyy-MM-dd
+            fecha = localDate.atStartOfDay(); // 2025-08-15T00:00
+        }
+
+        return controladoraPersistencia.listarVentasParaPaginado(cliente, fecha, offset, registrosPorPagina);
     }
 
+    public boolean anularFactura(String idFactura) {
+        Venta factura = buscarVentaFactura(Integer.parseInt(idFactura));
+        if (factura != null) {
+            factura.setEstadoFactura(false);
+            controladoraPersistencia.actualizarFactura(factura);
+            return true;
+        }
+        return false;
+
+    }
 
     // ---------------------------------------------Generacion de Factura ----------------------------------------------------------
     public void generarFactura(HttpServletResponse response, int idFactura) throws IOException {
@@ -498,8 +510,7 @@ public class ControladoraLogica {
                 addFooter(document);
 
                 document.close();
-        
-                
+
             } catch (Exception e) {
                 if (!response.isCommitted()) { // ← Verifica si la respuesta no se ha enviado
                     response.reset();
@@ -517,25 +528,12 @@ public class ControladoraLogica {
                 throw new IOException("Error generando factura", e);
             }
         }
-        
+
     }
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
 //----------------------------------------------------------Metodos Usados para PErsonalizar la factura------------------------------------------------------
     private void addHeader(Document document, int idFactura) {
+
         // Logo y datos de la empresa
         Paragraph header = new Paragraph()
                 .add(new Text("Factura \n").setFontSize(18).setBold())
@@ -547,11 +545,21 @@ public class ControladoraLogica {
 
         document.add(header);
 
+        Venta factura = buscarVentaFactura(idFactura);
+
+        if (factura.getEstadoFactura() == false) {
+            document.add(new Paragraph("\nFACTURA ANULADA")
+                    .setTextAlignment(TextAlignment.CENTER)
+                    .setBold()
+                    .setFontSize(22));
+        } else {
+            document.add(new Paragraph("\nFACTURA ELECTRÓNICA N° : " + idFactura + "\n")
+                    .setTextAlignment(TextAlignment.CENTER)
+                    .setBold()
+                    .setFontSize(16));
+        }
         // Título Factura
-        document.add(new Paragraph("\nFACTURA ELECTRÓNICA N° : " + idFactura + "\n")
-                .setTextAlignment(TextAlignment.CENTER)
-                .setBold()
-                .setFontSize(16));
+
     }
 
     private void addClientInfo(Document document, Venta factura) {
@@ -646,5 +654,4 @@ public class ControladoraLogica {
                 .setTextAlignment(TextAlignment.CENTER));
     }
 
-    
 }

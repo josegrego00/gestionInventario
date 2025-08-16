@@ -4,9 +4,11 @@
  */
 package persistencia;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.persistence.TypedQuery;
 import logica.Categoria;
 import logica.Cliente;
 import logica.Producto;
@@ -39,6 +41,11 @@ public class ControladoraPersistencia {
         ventaDetalladaJpaController = new VentaDetalladaJpaController();
     }
 
+    
+    public long contarVenta(String cliente, String fecha) {
+        return ventaJpaController.contarVentasFiltradas(cliente, fecha);
+    }
+    
     //------------------------------Persistencia de Categoria -------------------------------
     public Categoria buscarCategoriaPorId(int categoriaId) {
         return categoriaJpaController.findCategoria(categoriaId);
@@ -120,11 +127,6 @@ public class ControladoraPersistencia {
         clienteJpaController.create(clienteNuevo);
     }
 
-    
-    
-    
-    
-    
     //-------------------------Persistencia de Venta o Facturas-----------------------------------------
     public void crearFactura(Venta venta) {
         ventaJpaController.create(venta);
@@ -142,8 +144,12 @@ public class ControladoraPersistencia {
         return ventaJpaController.findVentaEntities();
     }
 
+    public List<Venta> listarVentasParaPaginado(String cliente, LocalDateTime fecha, int offset, int registrosPorPagina) {
+        return ventaJpaController.listarVentasFiltradas(cliente, fecha, offset, registrosPorPagina);
+    }
+
     public void actualizarFactura(Venta venta) {
-        try {        
+        try {
             ventaJpaController.edit(venta);
         } catch (NonexistentEntityException ex) {
             Logger.getLogger(ControladoraPersistencia.class.getName()).log(Level.SEVERE, null, ex);
@@ -151,5 +157,7 @@ public class ControladoraPersistencia {
             Logger.getLogger(ControladoraPersistencia.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
+    
 
 }

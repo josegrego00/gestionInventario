@@ -5,6 +5,8 @@
 package persistencia;
 
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaQuery;
@@ -16,6 +18,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.persistence.TypedQuery;
 import logica.Venta;
 import persistencia.exceptions.IllegalOrphanException;
 import persistencia.exceptions.NonexistentEntityException;
@@ -31,11 +34,10 @@ public class VentaJpaController implements Serializable {
     }
 
     public VentaJpaController() {
-    
-    this.emf=Persistence.createEntityManagerFactory("gestionPU");
+
+        this.emf = Persistence.createEntityManagerFactory("gestionPU");
     }
-    
-    
+
     private EntityManagerFactory emf = null;
 
     public EntityManager getEntityManager() {
@@ -235,5 +237,69 @@ public class VentaJpaController implements Serializable {
             em.close();
         }
     }
-    
+
+    public List<Venta> listarVentasFiltradas(String cliente, LocalDateTime fecha, int offset, int registrosPorPagina) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            // 1️⃣ Comenzamos con el JPQL base
+            StringBuilder jpql = new StringBuilder("SELECT v FROM Venta v WHERE 1=1");
+
+            // 2️⃣ Añadimos filtros si no son nulos/vacíos
+            if (cliente != null && !cliente.trim().isEmpty()) {
+                jpql.append(" AND LOWER(v.dniCliente.nombreCliente) LIKE LOWER(:cliente)");
+            }
+            if (fecha != null) {
+                jpql.append(" AND DATE(v.fechaVenta) = :fecha");
+            }
+
+            // 3️⃣ Ordenamos
+            jpql.append(" ORDER BY v.fechaVenta DESC");
+
+            // 4️⃣ Creamos la query
+            TypedQuery<Venta> query = em.createQuery(jpql.toString(), Venta.class);
+
+            // 5️⃣ Seteamos los parámetros si existen
+            if (cliente != null && !cliente.trim().isEmpty()) {
+                query.setParameter("cliente", "%" + cliente + "%");
+            }
+            if (fecha != null) {
+                query.setParameter("fecha", fecha);
+            }
+
+            // 6️⃣ Paginación
+            query.setFirstResult(offset);
+            query.setMaxResults(registrosPorPagina);
+
+            return query.getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    public long contarVentasFiltradas(String cliente, String fecha) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            StringBuilder jpql = new StringBuilder("SELECT COUNT(v) FROM Venta v WHERE 1=1");
+
+            if (cliente != null && !cliente.trim().isEmpty()) {
+                jpql.append(" AND LOWER(v.dniCliente.nombreCliente) LIKE LOWER(:cliente)");
+            }
+            if (fecha != null && !fecha.trim().isEmpty()) {
+                jpql.append(" AND FUNCTION('DATE', v.fechaVenta) = :fecha");
+            }
+
+            TypedQuery<Long> query = em.createQuery(jpql.toString(), Long.class);
+
+            if (cliente != null && !cliente.trim().isEmpty()) {
+                query.setParameter("cliente", "%" + cliente + "%");
+            }
+            if (fecha != null && !fecha.trim().isEmpty()) {
+                query.setParameter("fecha", LocalDate.parse(fecha));
+            }
+
+            return query.getSingleResult();
+        } finally {
+            em.close();
+        }
+    }
 }
