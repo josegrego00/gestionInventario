@@ -4,6 +4,7 @@
  */
 package persistencia;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.logging.Level;
@@ -144,7 +145,7 @@ public class ControladoraPersistencia {
         return ventaJpaController.findVentaEntities();
     }
 
-    public List<Venta> listarVentasParaPaginado(String cliente, LocalDateTime fecha, int offset, int registrosPorPagina) {
+    public List<Venta> listarVentasParaPaginado(String cliente, LocalDate fecha, int offset, int registrosPorPagina) {
         return ventaJpaController.listarVentasFiltradas(cliente, fecha, offset, registrosPorPagina);
     }
 

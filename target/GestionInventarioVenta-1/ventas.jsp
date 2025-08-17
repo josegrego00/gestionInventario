@@ -66,7 +66,7 @@
                         if (listaVentas != null && !listaVentas.isEmpty()) {
                             for (Venta venta : listaVentas) {
                     %>
-                    <tr>
+                    <tr  class="<%= venta.getEstadoFactura() ? "" : "table-danger" %>">
                         <td><%= venta.getId()%></td>
                         <td>
                             <%

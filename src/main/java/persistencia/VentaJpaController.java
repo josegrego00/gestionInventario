@@ -238,7 +238,7 @@ public class VentaJpaController implements Serializable {
         }
     }
 
-    public List<Venta> listarVentasFiltradas(String cliente, LocalDateTime fecha, int offset, int registrosPorPagina) {
+    public List<Venta> listarVentasFiltradas(String cliente, LocalDate fecha, int offset, int registrosPorPagina) {
         EntityManager em = emf.createEntityManager();
         try {
             // 1️⃣ Comenzamos con el JPQL base
@@ -249,7 +249,7 @@ public class VentaJpaController implements Serializable {
                 jpql.append(" AND LOWER(v.dniCliente.nombreCliente) LIKE LOWER(:cliente)");
             }
             if (fecha != null) {
-                jpql.append(" AND DATE(v.fechaVenta) = :fecha");
+                jpql.append(" AND v.fechaVenta BETWEEN :inicioDia AND :finDia");
             }
 
             // 3️⃣ Ordenamos
@@ -263,9 +263,11 @@ public class VentaJpaController implements Serializable {
                 query.setParameter("cliente", "%" + cliente + "%");
             }
             if (fecha != null) {
-                query.setParameter("fecha", fecha);
+                LocalDateTime inicioDia = fecha.atStartOfDay();
+                LocalDateTime finDia = fecha.atTime(23, 59, 59);
+                query.setParameter("inicioDia", inicioDia);
+                query.setParameter("finDia", finDia);
             }
-
             // 6️⃣ Paginación
             query.setFirstResult(offset);
             query.setMaxResults(registrosPorPagina);

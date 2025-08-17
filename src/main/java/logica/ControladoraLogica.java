@@ -459,14 +459,14 @@ public class ControladoraLogica {
     }
 
     public List<Venta> listarVentasParaPaginado(String cliente, String fechaStr, int offset, int registrosPorPagina) {
-        LocalDateTime fecha = null;
+        LocalDate localfecha=null;
 
         if (fechaStr != null && !fechaStr.trim().isEmpty()) {
-            LocalDate localDate = LocalDate.parse(fechaStr); // Formato ISO yyyy-MM-dd
-            fecha = localDate.atStartOfDay(); // 2025-08-15T00:00
+            localfecha = LocalDate.parse(fechaStr); // Formato ISO yyyy-MM-dd
+            
         }
-
-        return controladoraPersistencia.listarVentasParaPaginado(cliente, fecha, offset, registrosPorPagina);
+        
+        return controladoraPersistencia.listarVentasParaPaginado(cliente, localfecha, offset, registrosPorPagina);
     }
 
     public boolean anularFactura(String idFactura) {

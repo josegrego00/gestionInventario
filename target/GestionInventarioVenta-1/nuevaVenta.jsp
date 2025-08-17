@@ -152,10 +152,10 @@
 
                 <!-- Botones -->
                 <div class="d-flex justify-content-between mt-4">
-                    <button type="submit" name="accion" value="guardar" class="btn btn-primary" >
-                        <i class="bi bi-save"></i> Guardar Factura
+                    <button type="submit" name="accion" value="guardar" class="btn btn-primary" onclick="return confirmarVenta()">
+                        <i class="bi bi-save" ></i> Guardar Factura
                     </button>
-                    <a href="SVListarVentasReportes" class="btn btn-secondary">
+                    <a href="SVListarVentasReportes" class="btn btn-secondary" onclick="return confirmarCancelar()">
                         <i class="bi bi-x-circle"></i> Cancelar
                     </a>
                 </div>
@@ -168,14 +168,14 @@
 
 <!-- --------------------- JavaScript -------------------- -->
 <script>
-    //Aqui es donde Agrego el detalle de mi venta
-    // En este Array
+//Aqui es donde Agrego el detalle de mi venta   
+// En este Array
     const detalle = [];
 
     function agregarProducto() {
+        mostrarCamposPago();
         const select = document.getElementById("productoSelect");
         const cantidad = parseInt(document.getElementById("cantidadInput").value);
-
         const opcion = select.options[select.selectedIndex];
         if (!opcion.value || isNaN(cantidad) || cantidad <= 0) {
             alert("Seleccione un producto y una cantidad válida.");
@@ -186,9 +186,7 @@
         const nombre = opcion.getAttribute("data-nombre");
         const precio = parseFloat(opcion.getAttribute("data-precio"));
         const subtotal = precio * cantidad;
-
         console.log("Producto agregado:", {id, nombre, precio, cantidad, subtotal});
-
         // Agregar a tabla visual
         const tabla = document.getElementById("detalleTabla").getElementsByTagName("tbody")[0];
         const fila = tabla.insertRow();
@@ -196,7 +194,6 @@
         fila.insertCell().textContent = cantidad;
         fila.insertCell().textContent = '$' + precio.toFixed(2);
         fila.insertCell().textContent = '$' + subtotal.toFixed(2);
-
         // Botón eliminar
         const celdaBoton = fila.insertCell();
         const boton = document.createElement("button");
@@ -207,14 +204,11 @@
             eliminarFila(this);
         };
         celdaBoton.appendChild(boton);
-
         // Guardar en array
         detalle.push({productoId: id, nombre, precio, cantidad, subtotal});
-
         // Limpiar selección
         document.getElementById("productoSelect").selectedIndex = 0;
         document.getElementById("cantidadInput").value = 1;
-
         calcularTotal();
     }
 
@@ -243,7 +237,6 @@
         const formaPago = document.getElementById("formaPago").value;
         const total = parseFloat(document.getElementById("totalGeneral").value) || 0;
         const entregado = parseFloat(document.getElementById("montoEntregado").value) || 0;
-
         // Validar monto entregado cuando es efectivo
         if (formaPago === "efectivo") {
             if (entregado < total) {
@@ -258,13 +251,12 @@
     }
 
     function confirmarCancelacion() {
-        return confirm("¿Está seguro que desea Eliminar este Producto de la factura? ");
+        return confirm("¿Está seguro que desea Eliminar este Producto de la factura?         ");
     }
 
     function mostrarFormularioCliente() {
         const select = document.getElementById("clienteSelect");
         const nuevoForm = document.getElementById("nuevoClienteForm");
-
         if (select.value === "nuevo") {
             nuevoForm.style.display = "block";
         } else {
@@ -277,13 +269,11 @@
         const efectivo = document.getElementById("grupoMontoEfectivo");
         const transferencia = document.getElementById("grupoMontoTransferencia");
         const grupoCambio = document.getElementById("grupoCambio");
-
         // Limpiar siempre los valores al cambiar forma de pago
         document.getElementById("montoEfectivo").value = "";
         document.getElementById("montoTransferencia").value = "";
         document.getElementById("cambio").value = "";
-
-
+        
         if (formaPago === "Efectivo") {
             efectivo.style.display = "block";
             transferencia.style.display = "none";
@@ -310,10 +300,8 @@
         const total = parseFloat(document.getElementById("totalGeneral").value) || 0;
         const montoEfectivo = parseFloat(document.getElementById("montoEfectivo")?.value) || 0;
         const montoTransferencia = parseFloat(document.getElementById("montoTransferencia")?.value) || 0;
-
         const totalPagado = montoEfectivo + montoTransferencia;
         const resultado = totalPagado - total;
-
         document.getElementById("cambio").value = resultado.toFixed(2);
     }
 
@@ -327,7 +315,6 @@
         const montoEfectivo = parseFloat(document.getElementById("montoEfectivo")?.value) || 0;
         const montoTransferencia = parseFloat(document.getElementById("montoTransferencia")?.value) || 0;
         const totalPagado = montoEfectivo + montoTransferencia;
-
         if (totalPagado < total) {
             alert("El monto total pagado no puede ser menor al total de la venta.");
             return false;
@@ -340,7 +327,6 @@
     function confirmarGuardar(generar) {
         const modal = bootstrap.Modal.getInstance(document.getElementById('modalConfirmarPDF'));
         modal.hide();
-
         if (generar) {
             const idFactura = document.getElementById('idFacturaHidden').value;
             window.location.href = "SVGenerarFacturaPDF?idFactura=" + idFactura;
@@ -348,6 +334,12 @@
             // Recargar limpia para nueva venta
             window.location.href = "SVListarProductosVenta";
         }
+    }
+    function confirmarVenta() {
+        return confirm("¿Desea Confirmar la Compra?");
+    }
+    function confirmarCancelar() {
+        return confirm("¿Desea Salir de la Factura?, se Perdera Todo");
     }
 
 </script>
