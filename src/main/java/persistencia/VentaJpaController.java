@@ -17,7 +17,9 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.ParameterMode;
 import javax.persistence.Persistence;
+import javax.persistence.StoredProcedureQuery;
 import javax.persistence.TypedQuery;
 import logica.Venta;
 import persistencia.exceptions.IllegalOrphanException;
@@ -304,4 +306,29 @@ public class VentaJpaController implements Serializable {
             em.close();
         }
     }
+    
+    public boolean descontarInventarioVenta(int idFactura) {
+    EntityManager em = getEntityManager();
+    try {
+        StoredProcedureQuery query = em.createStoredProcedureQuery("sp_descontar_inventario_venta");
+        query.registerStoredProcedureParameter("id_factura", Integer.class, ParameterMode.IN);
+        query.setParameter("id_factura", idFactura);
+        query.execute();
+        return true;
+    } catch (Exception e) {
+        e.printStackTrace();
+        return false;
+    } finally {
+        if (em != null && em.isOpen()) {
+            em.close();
+        }
+    }
+    
+    
+    
+}
+    
+    
+    
+    
 }

@@ -4,9 +4,9 @@ use gestion_inventario_venta;
 show databases;
 show tables;
 describe venta_detallada;
-describe venta;
+describe producto;
 
-set SQL_SAFE_UPDATES=1;
+set SQL_SAFE_UPDATES=0;
 update venta 
 set estado_factura=1 where estado_factura is null;
 
@@ -16,9 +16,11 @@ dniCliente varchar(20) not null unique,
 nombre_cliente varchar(200) not null
 );
 describe venta;
-Select * from venta;
+Select * from venta_detallada;
 Select * from producto;
 Select * from cliente;
+
+
 create table producto(
 id int primary key auto_increment,
 nombre_producto varchar(200) not null unique,
@@ -77,6 +79,46 @@ nombre_rol varchar(200) not null
 alter table usuarios
 add column contrasenna varchar(50) not null after nombre_usuario;
 
+-- Aqui van los Store Procedure--
+-- aqui coloco el Strore procedure paar que cuando se genere una factura la misma descuente del inventario todo lo q se compro.
+-- lo importante de esto es q no toca el codigo de java ya que queda todo en manos de MYSQl
+
+drop PROCEDURE sp_descontar_inventario;
+
+DELIMITER $$
+
+CREATE PROCEDURE sp_descontar_inventario(
+    IN id_factura INT
+)
+BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        RESIGNAL;
+    END;
+    
+    START TRANSACTION;
+    
+    -- Actualizar stock para todos los productos de la venta
+    UPDATE producto p
+    JOIN venta_detallada vd ON p.id = vd.id_producto
+    SET p.inventario = p.inventario - vd.cantidad_vendida        
+		WHERE vd.id_venta = id_factura
+	      AND p.inventario >= vd.cantidad_vendida;
+    
+    -- Verificar si alguna actualización falló por stock insuficiente
+    IF ROW_COUNT() < (SELECT COUNT(*) FROM venta_detallada WHERE id_venta = id_factura) THEN
+        ROLLBACK;
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Stock insuficiente para uno o más productos';
+    ELSE
+        COMMIT;
+    END IF;
+    
+END$$
+
+DELIMITER ;
 
 
+CALL sp_descontar_inventario(116); 
 

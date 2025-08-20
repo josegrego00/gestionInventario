@@ -270,7 +270,17 @@ public class ControladoraLogica {
         controladoraPersistencia.eliminarProducto(producto.getId());
     }
 
-//--------------------------------- Logica de Categoria -----------------------------------
+    
+    private boolean ajusteDescuentoInventarioProductos(Venta facturaVenta) {
+        return controladoraPersistencia.ajusteDescuentoInventarioProductos(facturaVenta.getId());
+    }
+
+    
+    
+    
+    
+    
+//---------------------------------------------------------------------------- Logica de Categoria ------------------------------------------------------------------------------
     public List<Categoria> listarCategorias() {
         return controladoraPersistencia.listarCategorias();
     }
@@ -442,9 +452,10 @@ public class ControladoraLogica {
                 ventaDetallada.setIdProducto(producto);
                 ventaDetallada.setCantidadVendida(BigDecimal.valueOf(item.getCantidad()));
                 ventaDetallada.setPrecioProducto(BigDecimal.valueOf(item.getPrecio()));
+                
                 controladoraPersistencia.guardarDetalleVenta(ventaDetallada);
             }
-
+            ajusteDescuentoInventarioProductos(facturaVenta);
         } catch (Exception e) {
             e.printStackTrace();
         }

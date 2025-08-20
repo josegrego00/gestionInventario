@@ -213,6 +213,7 @@
     }
 
     function eliminarFila(btn) {
+        mostrarCamposPago();
         if (!confirmarCancelacion()) {
             return;
         }

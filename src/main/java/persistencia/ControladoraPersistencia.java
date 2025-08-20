@@ -119,6 +119,13 @@ public class ControladoraPersistencia {
         }
     }
 
+    
+    public boolean ajusteDescuentoInventarioProductos(Integer idFactura) {
+        return ventaJpaController.descontarInventarioVenta(idFactura);
+    }
+
+    
+    
     //---------------------------- Persistencia de Clientes-------------------------------------------
     public List<Cliente> listarClientes() {
         return clienteJpaController.findClienteEntities();
