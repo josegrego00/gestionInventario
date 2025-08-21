@@ -32,9 +32,9 @@ public class ProductoJpaController implements Serializable {
     }
 
     public ProductoJpaController() {
-    this.emf=Persistence.createEntityManagerFactory("gestionPU");
+        this.emf = Persistence.createEntityManagerFactory("gestionPU");
     }
-    
+
     private EntityManagerFactory emf = null;
 
     public EntityManager getEntityManager() {
@@ -218,6 +218,7 @@ public class ProductoJpaController implements Serializable {
     }
 
     public List<Producto> findProductoEntities() {
+
         return findProductoEntities(true, -1, -1);
     }
 
@@ -228,6 +229,7 @@ public class ProductoJpaController implements Serializable {
     private List<Producto> findProductoEntities(boolean all, int maxResults, int firstResult) {
         EntityManager em = getEntityManager();
         try {
+            em.clear();
             CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
             cq.select(cq.from(Producto.class));
             Query q = em.createQuery(cq);
@@ -235,6 +237,9 @@ public class ProductoJpaController implements Serializable {
                 q.setMaxResults(maxResults);
                 q.setFirstResult(firstResult);
             }
+            // 🔥 Forzar a que lea siempre de BD, no de caché
+            q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+
             return q.getResultList();
         } finally {
             em.close();
@@ -262,5 +267,5 @@ public class ProductoJpaController implements Serializable {
             em.close();
         }
     }
-    
+
 }

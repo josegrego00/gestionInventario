@@ -121,7 +121,7 @@ public class ControladoraPersistencia {
 
     
     public void ajusteDescuentoInventarioProductos(Integer idFactura) {
-        ventaJpaController.descontarInventarioVenta(idFactura);
+        ventaJpaController.descontarInventarioVentaSP(idFactura);
     }
 
     

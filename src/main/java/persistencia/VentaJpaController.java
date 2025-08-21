@@ -308,19 +308,19 @@ public class VentaJpaController implements Serializable {
         }
     }
 
-    public void descontarInventarioVenta(int idFactura) {
+    public void descontarInventarioVentaSP(int idFactura) {
         EntityManager em = getEntityManager();
-        
+
         try {
-        
+
             StoredProcedureQuery query = em.createStoredProcedureQuery("sp_descontar_inventario");
             query.registerStoredProcedureParameter("id_factura", Integer.class, ParameterMode.IN);
             query.setParameter("id_factura", idFactura);
             query.execute();
+            em.clear();
 
-        
-            
         } catch (Exception e) {
+
             e.printStackTrace();
 
         } finally {
