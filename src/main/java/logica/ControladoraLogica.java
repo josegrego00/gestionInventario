@@ -271,8 +271,8 @@ public class ControladoraLogica {
     }
 
     
-    private boolean ajusteDescuentoInventarioProductos(Venta facturaVenta) {
-        return controladoraPersistencia.ajusteDescuentoInventarioProductos(facturaVenta.getId());
+    private void ajusteDescuentoInventarioProductos(Venta facturaVenta) {
+        controladoraPersistencia.ajusteDescuentoInventarioProductos(facturaVenta.getId());
     }
 
     
@@ -455,7 +455,13 @@ public class ControladoraLogica {
                 
                 controladoraPersistencia.guardarDetalleVenta(ventaDetallada);
             }
+            
+            
+            // aqui es donde descuento lo q se facturo en la base de datos.
+            
             ajusteDescuentoInventarioProductos(facturaVenta);
+            
+            
         } catch (Exception e) {
             e.printStackTrace();
         }

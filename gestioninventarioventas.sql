@@ -83,42 +83,27 @@ add column contrasenna varchar(50) not null after nombre_usuario;
 -- aqui coloco el Strore procedure paar que cuando se genere una factura la misma descuente del inventario todo lo q se compro.
 -- lo importante de esto es q no toca el codigo de java ya que queda todo en manos de MYSQl
 
-drop PROCEDURE sp_descontar_inventario;
+drop PROCEDURE  if exists sp_descontar_inventario;
 
 DELIMITER $$
-
-CREATE PROCEDURE sp_descontar_inventario(
-    IN id_factura INT
-)
+$$
+CREATE PROCEDURE sp_descontar_inventario(id_factura INT)
 BEGIN
-    DECLARE EXIT HANDLER FOR SQLEXCEPTION
-    BEGIN
-        ROLLBACK;
-        RESIGNAL;
+	-- AQUI DECLARO SI HAY UNA EXCEPTION PARA QUE REGRESE TODO A SU INICIO
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN 
+		ROLLBACK;
     END;
-    
-    START TRANSACTION;
-    
-    -- Actualizar stock para todos los productos de la venta
+
+-- INICIO DE TRANS 
+	START TRANSACTION;
     UPDATE producto p
     JOIN venta_detallada vd ON p.id = vd.id_producto
     SET p.inventario = p.inventario - vd.cantidad_vendida        
-		WHERE vd.id_venta = id_factura
-	      AND p.inventario >= vd.cantidad_vendida;
-    
-    -- Verificar si alguna actualización falló por stock insuficiente
-    IF ROW_COUNT() < (SELECT COUNT(*) FROM venta_detallada WHERE id_venta = id_factura) THEN
-        ROLLBACK;
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Stock insuficiente para uno o más productos';
-    ELSE
-        COMMIT;
-    END IF;
-    
-END$$
+		WHERE vd.id_venta = id_factura;
+    COMMIT;
+END;
+$$	
 
-DELIMITER ;
-
-
-CALL sp_descontar_inventario(116); 
+CALL sp_descontar_inventario(126); 
 

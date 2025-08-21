@@ -120,8 +120,8 @@ public class ControladoraPersistencia {
     }
 
     
-    public boolean ajusteDescuentoInventarioProductos(Integer idFactura) {
-        return ventaJpaController.descontarInventarioVenta(idFactura);
+    public void ajusteDescuentoInventarioProductos(Integer idFactura) {
+        ventaJpaController.descontarInventarioVenta(idFactura);
     }
 
     
