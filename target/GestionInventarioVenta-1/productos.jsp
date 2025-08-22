@@ -11,22 +11,32 @@
     </head>
     <body>
         <jsp:include page="index.jsp" />
+        
+        <%-- Mensaje de éxito --%>
+        <% if (session.getAttribute("mensajeExito") != null) {%>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <%= session.getAttribute("mensajeExito")%>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <% session.removeAttribute("mensajeExito"); // Limpia después de mostrar %>
+        <% } %>
+
+        <%-- Mensaje de Error--%>
+        <% if (session.getAttribute("mensajeError") != null) {%>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <%= session.getAttribute("mensajeError")%>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <% session.removeAttribute("mensajeError"); // Limpia después de mostrar %>
+        <% } %>
+
+        
+        
+        
+        
         <div class="container mt-4">
 
-            <!-- Aqui es donde Muestro mis mensajes, aqui es donde indico que el prodicto existe o no existe -->
-            <c:if test="${not empty param.mensaje}">
-                <div class="alert alert-success">
-                    ${param.mensaje}
-                </div>
-            </c:if>
-
-            <!-- Aqui es donde Muestro mis mensajes generalmente de Error -->
-            <c:if test="${not empty param.error}">
-                <div class="alert alert-danger">
-                    ${param.error}
-                </div>
-            </c:if>
-
+            
             <h2 class="mb-3">Lista de Productos</h2>
             <a href="SVListarCategoriaYProveedor" class="btn btn-primary mb-3">Agregar Producto</a>
             <form method="GET" action="SVListarProductos" class="row g-3 mb-4">

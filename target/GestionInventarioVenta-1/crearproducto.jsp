@@ -12,6 +12,29 @@
     </head>
     <body>
         <jsp:include page="index.jsp" />
+
+        <%-- Mensaje de éxito --%>
+        <% if (session.getAttribute("mensajeExito") != null) {%>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <%= session.getAttribute("mensajeExito")%>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <% session.removeAttribute("mensajeExito"); // Limpia después de mostrar %>
+        <% } %>
+
+        <%-- Mensaje de Error--%>
+        <% if (session.getAttribute("mensajeError") != null) {%>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <%= session.getAttribute("mensajeError")%>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <% session.removeAttribute("mensajeError"); // Limpia después de mostrar %>
+        <% } %>
+
+
+
+
+
         <div class="container mt-4">
             <h2 class="mb-4">Agregar Nuevo Producto</h2>
             <form action="SVGuardarProductoNuevo" method="post">
@@ -80,8 +103,8 @@
                 <a href="SVListarProductos" class="btn btn-secondary" onclick="return confirmarCancelacion()">Cancelar</a>
             </form>
         </div>
-                        
-                        <<!-- ------------------------- JavaScript.--------------------------------- -->                        
+
+        <<!-- ------------------------- JavaScript.--------------------------------- -->                        
         <!-- Esto es una codigo de Java Script con la idea de que cuando se precione el boton de cancelarar arroje un mensaje de advertencia -->
         <script>
             function confirmarCancelacion() {

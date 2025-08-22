@@ -42,11 +42,10 @@ public class ControladoraPersistencia {
         ventaDetalladaJpaController = new VentaDetalladaJpaController();
     }
 
-    
     public long contarVenta(String cliente, String fecha) {
         return ventaJpaController.contarVentasFiltradas(cliente, fecha);
     }
-    
+
     //------------------------------Persistencia de Categoria -------------------------------
     public Categoria buscarCategoriaPorId(int categoriaId) {
         return categoriaJpaController.findCategoria(categoriaId);
@@ -109,23 +108,14 @@ public class ControladoraPersistencia {
         }
     }
 
-    public void eliminarProducto(Integer id) {
-        try {
-            productoJpaController.destroy(id);
-        } catch (IllegalOrphanException ex) {
-            Logger.getLogger(ControladoraPersistencia.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (NonexistentEntityException ex) {
-            Logger.getLogger(ControladoraPersistencia.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    public void eliminarProducto(Integer id) throws IllegalOrphanException, NonexistentEntityException, Exception {
+        productoJpaController.destroy(id);
     }
 
-    
     public void ajusteDescuentoInventarioProductos(Integer idFactura) {
         ventaJpaController.descontarInventarioVentaSP(idFactura);
     }
 
-    
-    
     //---------------------------- Persistencia de Clientes-------------------------------------------
     public List<Cliente> listarClientes() {
         return clienteJpaController.findClienteEntities();
@@ -165,7 +155,5 @@ public class ControladoraPersistencia {
             Logger.getLogger(ControladoraPersistencia.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
-    
 
 }

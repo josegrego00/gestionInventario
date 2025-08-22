@@ -33,6 +33,7 @@ import logica.Categoria;
 import logica.Producto;
 import logica.Proveedor;
 import persistencia.ControladoraPersistencia;
+import persistencia.exceptions.IllegalOrphanException;
 
 /**
  *
@@ -266,7 +267,7 @@ public class ControladoraLogica {
         return true; // Todos los datos son válidos
     }
 
-    public void eliminarProducto(Producto producto) {
+    public void eliminarProducto(Producto producto) throws IllegalOrphanException, Exception{
         controladoraPersistencia.eliminarProducto(producto.getId());
     }
 
