@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import javax.persistence.TypedQuery;
 import logica.Categoria;
 import logica.Cliente;
+import logica.Compra;
 import logica.Producto;
 import logica.Proveedor;
 import logica.Venta;
@@ -31,6 +32,7 @@ public class ControladoraPersistencia {
     private ClienteJpaController clienteJpaController;
     private VentaJpaController ventaJpaController;
     private VentaDetalladaJpaController ventaDetalladaJpaController;
+    private CompraJpaController compraJpaController;
 
     public ControladoraPersistencia() {
 
@@ -40,6 +42,7 @@ public class ControladoraPersistencia {
         clienteJpaController = new ClienteJpaController();
         ventaJpaController = new VentaJpaController();
         ventaDetalladaJpaController = new VentaDetalladaJpaController();
+        compraJpaController= new CompraJpaController();
     }
 
     public long contarVenta(String cliente, String fecha) {
@@ -154,6 +157,13 @@ public class ControladoraPersistencia {
         } catch (Exception ex) {
             Logger.getLogger(ControladoraPersistencia.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+//------------------------------------Modulo de compras -----------------------------------------------------------------------------
+
+
+    public List<Compra> listarComprasParaPaginado(String proveedor, LocalDate localfecha, int offset, int registrosPorPagina) {
+    return compraJpaController.listarComprasFiltradas(proveedor, localfecha, offset, registrosPorPagina);
     }
 
 }

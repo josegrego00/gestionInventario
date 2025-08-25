@@ -33,12 +33,6 @@ import javax.validation.constraints.Size;
     @NamedQuery(name = "Categoria.findByDescripcionCategoria", query = "SELECT c FROM Categoria c WHERE c.descripcionCategoria = :descripcionCategoria")})
 public class Categoria implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "id")
-    private Integer id;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 200)
@@ -49,6 +43,13 @@ public class Categoria implements Serializable {
     @Size(min = 1, max = 200)
     @Column(name = "descripcion_categoria")
     private String descripcionCategoria;
+
+    private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "id")
+    private Integer id;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "idCategoria")
     private List<Producto> productoList;
 
@@ -121,5 +122,6 @@ public class Categoria implements Serializable {
     public String toString() {
         return "logica.Categoria[ id=" + id + " ]";
     }
+
     
 }

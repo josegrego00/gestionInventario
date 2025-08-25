@@ -43,12 +43,6 @@ import javax.validation.constraints.Size;
     @NamedQuery(name = "Producto.findByInventario", query = "SELECT p FROM Producto p WHERE p.inventario = :inventario")})
 public class Producto implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "id")
-    private Integer id;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 200)
@@ -67,6 +61,15 @@ public class Producto implements Serializable {
     @NotNull
     @Column(name = "costo_producto")
     private BigDecimal costoProducto;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idProducto")
+    private List<CompraDetallada> compraDetalladaList;
+
+    private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "id")
+    private Integer id;
     @Column(name = "fecha_creacion")
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaCreacion;
@@ -198,6 +201,15 @@ public class Producto implements Serializable {
     @Override
     public String toString() {
         return "logica.Producto[ id=" + id + " ]";
+    }
+
+
+    public List<CompraDetallada> getCompraDetalladaList() {
+        return compraDetalladaList;
+    }
+
+    public void setCompraDetalladaList(List<CompraDetallada> compraDetalladaList) {
+        this.compraDetalladaList = compraDetalladaList;
     }
     
 }

@@ -1,42 +1,169 @@
+<%@page import="java.util.List"%>
+<%@page import="logica.Compra"%>
 <!-- compras.jsp -->
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Compras</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-<jsp:include page="index.jsp" />
-<div class="container mt-4">
-    <h2 class="mb-3">Historial de Compras</h2>
-    <a href="nuevaCompra.jsp" class="btn btn-primary mb-3">Registrar Compra</a>
-    <table class="table table-striped">
-        <thead>
-        <tr>
-            <th>ID</th>
-            <th>Fecha</th>
-            <th>Producto</th>
-            <th>Cantidad</th>
-            <th>Proveedor</th>
-            <th>Total</th>
-        </tr>
-        </thead>
-        <tbody>
-        <c:forEach var="compra" items="${compras}">
-            <tr>
-                <td>${compra.id}</td>
-                <td>${compra.fecha}</td>
-                <td>${compra.producto.nombre}</td>
-                <td>${compra.cantidad}</td>
-                <td>${compra.proveedor.nombre}</td>
-                <td>${compra.total}</td>
-            </tr>
-        </c:forEach>
-        </tbody>
-    </table>
-</div>
-</body>
+    <head>
+        <meta charset="UTF-8">
+        <title>Compras</title>
+        <link 
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" 
+            rel="stylesheet">
+    </head>
+    <body>
+        <jsp:include page="index.jsp" />
+
+        <%-- Mensaje de éxito --%>
+        <% if (session.getAttribute("mensaje") != null) {%>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <%= session.getAttribute("mensaje")%>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" 
+                    aria-label="Close"></button>
+        </div>
+        <% session.removeAttribute("mensaje"); // Limpia después de mostrar %>
+        <% } %>
+
+        <div class="container mt-4">
+            <h2 class="mb-3">Historial de Compras</h2>
+            <a href="SVListarProductosCompra" class="btn btn-primary mb-3">Registrar 
+                Compra</a>
+
+            <!-- Botones del filtro.-->
+            <form method="GET" action="SVListarComprasReportes" class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <input type="text" name="proveedor" class="form-control" 
+                           placeholder="Nombre del proveedor" 
+                           value="<%= request.getParameter("proveedor") != null
+                                   ? request.getParameter("proveedor") : ""%>">
+                </div>
+                <div class="col-md-4">
+                    <input type="date" name="fecha" class="form-control"
+                           value="<%= request.getParameter("fecha") != null
+                                   ? request.getParameter("fecha") : ""%>">
+                </div>
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-primary">Filtrar</button>
+                    <a href="SVListarComprasReportes" class="btn
+                       btn-secondary">Limpiar</a>
+                </div>
+            </form>
+
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Fecha</th>
+                        <th>Nombre Proveedor</th>
+                        <th>Total</th>
+                        <th>Tipo Pago</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <%
+                        List<Compra> listaCompras = (List<Compra>) request.getAttribute("listaComprasExistentes");
+                        if (listaCompras != null && !listaCompras.isEmpty()) {
+                            for (Compra compra : listaCompras) {
+                    %>
+
+                <td><%= compra.getId()%></td>
+                <td>
+                    <%
+                        String fechaOriginal = compra.getFechaCompra().toString();
+                        String fechaFormateada = fechaOriginal.replace("T", " ");
+                        if (fechaFormateada.contains(".")) {
+                            fechaFormateada = fechaFormateada.substring(0,
+                                    fechaFormateada.indexOf("."));
+                        }
+                    %>
+                    <%= fechaFormateada%>
+                </td>
+                <td><%= compra.getIdProveedor().getNombreProveedor()%></td>
+                <td><%= compra.getTotalCompra()%></td>
+
+                : "Anulada"%></td>
+                <td>
+                    <a href="SVGenerarFacturaPDF?idFactura=<%=compra.getId()%>" class="btn btn-warning btn-sm">Generar PDF</a>
+                    <form action="SVAnularCompra" method="POST" 
+                          style="display: inline;">
+                        <input type="hidden" name="idFactura" value="<%=compra.getId()%>">
+                        <button type="submit" class="btn btn-danger btn-sm" 
+                                onclick="return confirmarCancelacion()">Anular Factura</button>
+                    </form>
+                </td>
+
+                <%
+                    }
+                } else {
+                %>
+                <tr>
+                    <td colspan="7" class="text-center">No hay Facturas a 
+                        mostrar.</td>
+                </tr>
+                <%
+                    }
+                %></tbody>
+            </table>
+
+            <!-- Ajuste con Botones para que se pasen con paginacion -->
+            <div class="d-flex justify-content-center mt-4">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+
+                        <%
+                            Integer paginaActualAttr = (Integer) request.getAttribute("paginaActual");
+                            Integer totalPaginasAttr = (Integer) request.getAttribute("totalPaginas");
+
+                            int paginaActual = (paginaActualAttr != null) ? paginaActualAttr : 1;
+                            int totalPaginas = (totalPaginasAttr != null) ? totalPaginasAttr : 1;
+
+                            String proveedorParam = request.getParameter("proveedor") != null
+                                    ? "&proveedor=" + request.getParameter("proveedor") : "";
+                            String fechaParam = request.getParameter("fecha") != null
+                                    ? "&fecha=" + request.getParameter("fecha") : "";
+                            String extraParams = proveedorParam + fechaParam;
+                        %>
+
+                        <!-- Botón Anterior -->
+                        <li class="page-item <%= (paginaActual == 1) ? "disabled" : ""%>">
+                            <a class="page-link" 
+                               href="SVListarComprasReportes?page=<%= paginaActual - 1%><%= extraParams%>">
+                                Anterior
+                            </a>
+                        </li>
+
+                        <!-- Números de página -->
+                        <%
+                            for (int i = 1; i <= totalPaginas; i++) {
+                        %>
+                        <li class="page-item <%= (i == paginaActual) ? "active" : ""%>">
+                            <a class="page-link" 
+                               href="SVListarComprasReportes?page=<%= i%><%= extraParams%>">
+                                <%= i%>
+                            </a>
+                        </li>
+                        <%
+                            }
+                        %>
+
+                        <!-- Botón Siguiente -->
+                        <li class="page-item <%= (paginaActual == totalPaginas) ? "disabled" : ""%>">
+                            <a class="page-link" 
+                               href="SVListarComprasReportes?page=<%= paginaActual + 1%><%= extraParams%>">
+                                Siguiente
+                            </a>
+                        </li>
+
+                    </ul>
+                </nav>
+            </div>
+            <script>
+                function confirmarCancelacion() {
+                    return confirm("¿Está seguro que desea Anular esta factura? ");
+                }
+            </script>        
+    </body>
 </html>

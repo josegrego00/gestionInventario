@@ -9,6 +9,7 @@
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/persistencia/ProductoJpaController.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/logica/Proveedor.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/logica/Categoria.java
+/home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/persistencia/CompraJpaController.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/logica/Producto.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/servlets/SVGenerarFacturaPDF.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/servlets/SVListarProductos.java
@@ -26,10 +27,15 @@
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/logica/Rol.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/persistencia/CategoriaJpaController.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/logica/DetalleVentaFactura.java
+/home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/logica/Compra.java
+/home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/persistencia/ProductoJpaController1.java
+/home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/persistencia/CompraDetalladaJpaController.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/persistencia/VentaJpaController.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/servlets/SVEditarCategoriasPorCodigo.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/persistencia/VentaDetalladaJpaController.java
+/home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/logica/CompraDetallada.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/persistencia/exceptions/NonexistentEntityException.java
+/home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/servlets/SVListarComprasReportes.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/persistencia/ClienteJpaController.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/persistencia/ProveedorJpaController.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/servlets/SVEliminarProducto.java
@@ -37,3 +43,5 @@
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/servlets/SVGuardarProductoNuevo.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/servlets/SVListarProveedorCrearProveedor.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/persistencia/ControladoraPersistencia.java
+/home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/persistencia/ProveedorJpaController1.java
+/home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/persistencia/CategoriaJpaController1.java

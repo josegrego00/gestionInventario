@@ -107,3 +107,41 @@ $$
 
 CALL sp_descontar_inventario(126); 
 
+-- Esta son las Tablas de Compras, es decir lo q la empresa compra --
+
+create table compra(
+id int primary key auto_increment,
+n_factura varchar(300) not null unique,
+fecha_compra timestamp not null,
+descripcion_compra varchar(200),
+total_compra decimal(20,2) not null,
+id_proveedor int not null, -- Si tienes proveedores
+estado_compra varchar(50)-- PENDIENTE, FINALIZADA, ANULADA
+);
+
+create table compra_detallada(
+id int primary key auto_increment,
+n_factura varchar(300) not null,
+id_producto int not null,
+cantidad_comprada decimal(10,2) not null,
+precio_producto_comprado decimal(20,2) not null
+);
+
+
+-- Agregar la clave foránea en compra_detallada que referencia a compra
+ALTER TABLE compra_detallada 
+ADD CONSTRAINT fk_compra_factura 
+FOREIGN KEY (n_factura) REFERENCES compra(n_factura);
+
+-- Agregar la clave foránea en compra que referencia a proveedores (si existe)
+ALTER TABLE compra 
+ADD CONSTRAINT fk_compra_proveedor 
+FOREIGN KEY (id_proveedor) REFERENCES proveedor(id);
+
+-- Agregar la clave foránea en compra_detallada que referencia a productos (si 
+
+ALTER TABLE compra_detallada 
+ADD CONSTRAINT fk_compra_producto 
+FOREIGN KEY (id_producto) REFERENCES producto(id);
+```
+

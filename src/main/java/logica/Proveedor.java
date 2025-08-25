@@ -33,12 +33,6 @@ import javax.validation.constraints.Size;
     @NamedQuery(name = "Proveedor.findByDescripcionProveedor", query = "SELECT p FROM Proveedor p WHERE p.descripcionProveedor = :descripcionProveedor")})
 public class Proveedor implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "id")
-    private Integer id;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 200)
@@ -47,6 +41,15 @@ public class Proveedor implements Serializable {
     @Size(max = 200)
     @Column(name = "descripcion_proveedor")
     private String descripcionProveedor;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "idProveedor")
+    private List<Compra> compraList;
+
+    private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "id")
+    private Integer id;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "idProveedor")
     private List<Producto> productoList;
 
@@ -118,5 +121,13 @@ public class Proveedor implements Serializable {
     public String toString() {
         return "logica.Proveedor[ id=" + id + " ]";
     }
-    
+
+    public List<Compra> getCompraList() {
+        return compraList;
+    }
+
+    public void setCompraList(List<Compra> compraList) {
+        this.compraList = compraList;
+    }
+
 }

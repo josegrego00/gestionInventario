@@ -672,4 +672,23 @@ public class ControladoraLogica {
                 .setTextAlignment(TextAlignment.CENTER));
     }
 
+    
+    
+    
+    
+    // ---------------------------------------------Modulo de compras---------------------------------------------------------------------------
+     
+    
+    
+    public List<Compra> listarComprasParaPaginado(String proveedor, String fechaStr, int offset, int registrosPorPagina) {
+       LocalDate localfecha=null;
+
+        if (fechaStr != null && !fechaStr.trim().isEmpty()) {
+            localfecha = LocalDate.parse(fechaStr); // Formato ISO yyyy-MM-dd
+            
+        }
+        
+        return controladoraPersistencia.listarComprasParaPaginado(proveedor, localfecha, offset, registrosPorPagina);
+    }
+
 }
