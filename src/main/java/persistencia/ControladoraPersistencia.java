@@ -42,7 +42,7 @@ public class ControladoraPersistencia {
         clienteJpaController = new ClienteJpaController();
         ventaJpaController = new VentaJpaController();
         ventaDetalladaJpaController = new VentaDetalladaJpaController();
-        compraJpaController= new CompraJpaController();
+        compraJpaController = new CompraJpaController();
     }
 
     public long contarVenta(String cliente, String fecha) {
@@ -119,6 +119,10 @@ public class ControladoraPersistencia {
         ventaJpaController.descontarInventarioVentaSP(idFactura);
     }
 
+    public List<Producto> listarProductosPorProveedor(int idProveedor) {
+     return productoJpaController.listarProductosPorProveedor(idProveedor);
+    }
+
     //---------------------------- Persistencia de Clientes-------------------------------------------
     public List<Cliente> listarClientes() {
         return clienteJpaController.findClienteEntities();
@@ -160,10 +164,8 @@ public class ControladoraPersistencia {
     }
 
 //------------------------------------Modulo de compras -----------------------------------------------------------------------------
-
-
     public List<Compra> listarComprasParaPaginado(String proveedor, LocalDate localfecha, int offset, int registrosPorPagina) {
-    return compraJpaController.listarComprasFiltradas(proveedor, localfecha, offset, registrosPorPagina);
+        return compraJpaController.listarComprasFiltradas(proveedor, localfecha, offset, registrosPorPagina);
     }
 
 }

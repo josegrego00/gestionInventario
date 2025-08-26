@@ -27,7 +27,7 @@
 
         <div class="container mt-4">
             <h2 class="mb-3">Historial de Compras</h2>
-            <a href="SVListarProductosCompra" class="btn btn-primary mb-3">Registrar 
+            <a href="SVRealizarCompraNueva" class="btn btn-primary mb-3">Registrar 
                 Compra</a>
 
             <!-- Botones del filtro.-->

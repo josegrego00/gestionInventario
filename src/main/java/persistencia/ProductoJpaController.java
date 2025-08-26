@@ -268,4 +268,15 @@ public class ProductoJpaController implements Serializable {
         }
     }
 
+    List<Producto> listarProductosPorProveedor(int idProveedor) {
+        EntityManager em = getEntityManager();
+
+        try {
+            return em.createQuery("SELECT p FROM Producto p WHERE p.idProveedor.id = :idProveedor", Producto.class)
+                    .setParameter("idProveedor", idProveedor).getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
 }

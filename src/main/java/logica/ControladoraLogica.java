@@ -267,20 +267,18 @@ public class ControladoraLogica {
         return true; // Todos los datos son válidos
     }
 
-    public void eliminarProducto(Producto producto) throws IllegalOrphanException, Exception{
+    public void eliminarProducto(Producto producto) throws IllegalOrphanException, Exception {
         controladoraPersistencia.eliminarProducto(producto.getId());
     }
 
-    
     public void ajusteDescuentoInventarioProductos(Integer idfacturaVenta) {
         controladoraPersistencia.ajusteDescuentoInventarioProductos(idfacturaVenta);
     }
 
-    
-    
-    
-    
-    
+    public List<Producto> listarProductosPorProveedor(int idProveedor) {
+        return controladoraPersistencia.listarProductosPorProveedor(idProveedor);
+    }
+
 //---------------------------------------------------------------------------- Logica de Categoria ------------------------------------------------------------------------------
     public List<Categoria> listarCategorias() {
         return controladoraPersistencia.listarCategorias();
@@ -453,16 +451,11 @@ public class ControladoraLogica {
                 ventaDetallada.setIdProducto(producto);
                 ventaDetallada.setCantidadVendida(BigDecimal.valueOf(item.getCantidad()));
                 ventaDetallada.setPrecioProducto(BigDecimal.valueOf(item.getPrecio()));
-                
+
                 controladoraPersistencia.guardarDetalleVenta(ventaDetallada);
             }
-            
-            
+
             // aqui es donde descuento lo q se facturo en la base de datos.
-            
-            
-            
-            
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -477,13 +470,13 @@ public class ControladoraLogica {
     }
 
     public List<Venta> listarVentasParaPaginado(String cliente, String fechaStr, int offset, int registrosPorPagina) {
-        LocalDate localfecha=null;
+        LocalDate localfecha = null;
 
         if (fechaStr != null && !fechaStr.trim().isEmpty()) {
             localfecha = LocalDate.parse(fechaStr); // Formato ISO yyyy-MM-dd
-            
+
         }
-        
+
         return controladoraPersistencia.listarVentasParaPaginado(cliente, localfecha, offset, registrosPorPagina);
     }
 
@@ -672,22 +665,15 @@ public class ControladoraLogica {
                 .setTextAlignment(TextAlignment.CENTER));
     }
 
-    
-    
-    
-    
     // ---------------------------------------------Modulo de compras---------------------------------------------------------------------------
-     
-    
-    
     public List<Compra> listarComprasParaPaginado(String proveedor, String fechaStr, int offset, int registrosPorPagina) {
-       LocalDate localfecha=null;
+        LocalDate localfecha = null;
 
         if (fechaStr != null && !fechaStr.trim().isEmpty()) {
             localfecha = LocalDate.parse(fechaStr); // Formato ISO yyyy-MM-dd
-            
+
         }
-        
+
         return controladoraPersistencia.listarComprasParaPaginado(proveedor, localfecha, offset, registrosPorPagina);
     }
 

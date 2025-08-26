@@ -29,6 +29,7 @@ servlets/SVEditarCategoriasPorCodigo.class
 servlets/SVGuardarProductoNuevo.class
 logica/Producto.class
 persistencia/CompraDetalladaJpaController.class
+servlets/SVRealizarCompraNueva.class
 logica/ControladoraLogica.class
 logica/Usuarios_.class
 servlets/SVRegistrarVentaDetalle.class

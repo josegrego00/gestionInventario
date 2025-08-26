@@ -12,6 +12,7 @@
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/persistencia/CompraJpaController.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/logica/Producto.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/servlets/SVGenerarFacturaPDF.java
+/home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/servlets/SVRealizarCompraNueva.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/servlets/SVListarProductos.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/servlets/SVListarProductosVenta.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/persistencia/RolJpaController.java
