@@ -136,52 +136,134 @@
 
         <!-- ===================== JS ===================== -->
         <script>
+
+            /* Mantener estas variables globales en tu script */
             const detalleCompra = [];
+            let nextItemUid = 1; // contador simple para uid (puede ser Date.now() si prefieres)
+
+            // Agregar producto a la tabla y al array con UID único
             function agregarProductoCompra() {
                 const select = document.getElementById("productoSelect");
                 const cantidad = parseInt(document.getElementById("cantidadInput").value);
                 const opcion = select.options[select.selectedIndex];
-
-                if (!opcion.value || isNaN(cantidad) || cantidad <= 0) {
+                if (!opcion || !opcion.value || isNaN(cantidad) || cantidad <= 0) {
                     alert("Seleccione un producto y una cantidad válida.");
                     return;
                 }
 
                 const id = opcion.value;
                 const nombre = opcion.getAttribute("data-nombre");
-                const precio = parseFloat(opcion.getAttribute("data-precio"));
-                const subtotal = precio * cantidad;
+                const precio = parseFloat(opcion.getAttribute("data-precio")) || 0;
+                const subtotal = Math.round((precio * cantidad) * 100) / 100;
+                const uid = String(nextItemUid++); // uid único por fila
 
+                // insertar fila en la tabla
                 const tabla = document.getElementById("detalleCompraTabla").getElementsByTagName("tbody")[0];
                 const fila = tabla.insertRow();
-                fila.insertCell().textContent = nombre;
-                fila.insertCell().textContent = cantidad;
-                fila.insertCell().textContent = '$' + precio.toFixed(2);
-                fila.insertCell().textContent = '$' + subtotal.toFixed(2);
+                fila.dataset.uid = uid; // guardamos uid en la fila DOM
 
+                fila.insertCell().textContent = nombre; // col 0
+                fila.insertCell().textContent = cantidad; // col 1
+                fila.insertCell().textContent = '$' + precio.toFixed(2); // col 2 (precio)
+                fila.insertCell().textContent = '$' + subtotal.toFixed(2); // col 3 (subtotal)
+
+                // celda botones (col 4)
                 const celdaBoton = fila.insertCell();
-                const boton = document.createElement("button");
-                boton.textContent = "X";
-                boton.className = "btn btn-danger btn-sm";
-                boton.type = "button";
-                boton.onclick = function () {
-                    fila.remove();
-                    const index = detalleCompra.findIndex(item => item.productoId === id && item.cantidad === cantidad);
+                // boton eliminar
+                const botonEliminar = document.createElement("button");
+                botonEliminar.textContent = "X";
+                botonEliminar.className = "btn btn-danger btn-sm";
+                botonEliminar.type = "button";
+                botonEliminar.onclick = function () {
+                    const uidFila = fila.dataset.uid;
+                    const index = detalleCompra.findIndex(item => item.uid === uidFila);
                     if (index > -1)
                         detalleCompra.splice(index, 1);
+                    fila.remove();
                     calcularTotalCompra();
                 };
-                celdaBoton.appendChild(boton);
+                // boton editar (solo precio)
+                const botonEditar = document.createElement("button");
+                botonEditar.textContent = "Editar";
+                botonEditar.className = "btn btn-warning btn-sm ms-1";
+                botonEditar.type = "button";
+                botonEditar.onclick = function () {
+                    const celdaPrecio = fila.cells[2];
+                    const celdaSubtotal = fila.cells[3];
+                    // parsear precio actual (quitar símbolos)
+                    const precioActual = parseFloat(celdaPrecio.textContent.replace(/[^0-9.\-]+/g, '')) || 0;
+                    // crear input para editar precio
+                    const inputPrecio = document.createElement("input");
+                    inputPrecio.type = "number";
+                    inputPrecio.min = "0.01";
+                    inputPrecio.step = "0.01";
+                    inputPrecio.value = precioActual.toFixed(2);
+                    inputPrecio.className = "form-control form-control-sm";
+                    // reemplazar celda por input
+                    celdaPrecio.textContent = "";
+                    celdaPrecio.appendChild(inputPrecio);
+                    inputPrecio.focus();
+                    inputPrecio.select();
+                    function aplicarCambioPrecio() {
+                        const nuevoPrecio = parseFloat(inputPrecio.value);
+                        if (!isNaN(nuevoPrecio) && nuevoPrecio > 0) {
+                            // actualizar DOM
+                            celdaPrecio.textContent = '$' + nuevoPrecio.toFixed(2);
+                            const cantidadFila = parseInt(fila.cells[1].textContent) || 0;
+                            const nuevoSubtotal = Math.round((cantidadFila * nuevoPrecio) * 100) / 100;
+                            celdaSubtotal.textContent = '$' + nuevoSubtotal.toFixed(2);
+                            // actualizar en detalleCompra por uid
+                            const uidFila = fila.dataset.uid;
+                            const index = detalleCompra.findIndex(item => item.uid === uidFila);
+                            if (index > -1) {
+                                detalleCompra[index].precio = nuevoPrecio;
+                                detalleCompra[index].subtotal = nuevoSubtotal;
+                            }
 
-                detalleCompra.push({productoId: id, nombre, precio, cantidad, subtotal});
+                            calcularTotalCompra();
+                        } else {
+                            // inválido -> restaurar precio original
+                            celdaPrecio.textContent = '$' + precioActual.toFixed(2);
+                        }
+                    }
+
+                    // confirmar al perder foco
+                    inputPrecio.addEventListener("blur", function () {
+                        aplicarCambioPrecio();
+                    });
+                    // confirmar también con Enter, cancelar con Escape
+                    inputPrecio.addEventListener("keydown", function (e) {
+                        if (e.key === "Enter") {
+                            e.preventDefault();
+                            inputPrecio.blur();
+                        } else if (e.key === "Escape") {
+                            // cancelar
+                            celdaPrecio.textContent = '$' + precioActual.toFixed(2);
+                        }
+                    });
+                };
+                celdaBoton.appendChild(botonEliminar);
+                celdaBoton.appendChild(botonEditar);
+                // agregar al array con uid
+                detalleCompra.push({
+                    uid: uid,
+                    productoId: id,
+                    nombre: nombre,
+                    precio: precio,
+                    cantidad: cantidad,
+                    subtotal: subtotal
+                });
+                // limpiar UI
                 select.selectedIndex = 0;
                 document.getElementById("cantidadInput").value = 1;
                 calcularTotalCompra();
             }
 
+            // Suma el total usando los subtotales del array (numérico)
             function calcularTotalCompra() {
-                const total = detalleCompra.reduce((sum, item) => sum + item.subtotal, 0);
-                document.getElementById("totalCompra").value = total.toFixed(2);
+                const total = detalleCompra.reduce((sum, item) => sum + (Number(item.subtotal) || 0), 0);
+                // redondeo a 2 decimales y mostrar con dos dígitos
+                document.getElementById("totalCompra").value = (Math.round(total * 100) / 100).toFixed(2);
             }
 
             function mostrarCamposPagoCompra() {
@@ -189,11 +271,9 @@
                 const efectivo = document.getElementById("grupoMontoEfectivo");
                 const transferencia = document.getElementById("grupoMontoTransferencia");
                 const grupoCambio = document.getElementById("grupoCambio");
-
                 efectivo.style.display = "none";
                 transferencia.style.display = "none";
                 grupoCambio.style.display = "none";
-
                 if (formaPago === "Efectivo") {
                     efectivo.style.display = "block";
                     grupoCambio.style.display = "block";
@@ -229,10 +309,9 @@
             }
             function cambiarProveedor() {
                 const form = document.getElementById("formCompra");
-                form.action = "SVRealizarCompraNueva";  // mandamos al servlet de recarga
+                form.action = "SVRealizarCompraNueva"; // mandamos al servlet de recarga
                 form.method = "get";
                 form.submit();
-
                 // Luego, cuando guardes, el action vuelve a ser SVRegistrarCompraDetalle (definido en el JSP)
             }
         </script>
