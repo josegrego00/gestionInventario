@@ -130,4 +130,6 @@ public class Proveedor implements Serializable {
         this.compraList = compraList;
     }
 
+   
+
 }

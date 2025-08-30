@@ -40,6 +40,19 @@
                         %>
                     </select>
                 </div>
+
+                <div class="col-md-4">
+                    <label for="numeroFactura" class="form-label">Número de Factura</label>
+                    <input 
+                        type="text" 
+                        id="numeroFactura" 
+                        name="numeroFactura" 
+                        class="form-control" 
+                        maxlength="200" 
+                        placeholder="Ej: FAC-00123 o A123B"
+                        required>
+                </div>
+
                 <!-- ===================== PRODUCTOS (solo si ya hay proveedor seleccionado) ===================== -->
                 <%
                     List<Producto> productos = (List<Producto>) request.getAttribute("listaProductosExistentes");
@@ -87,6 +100,17 @@
                         </thead>
                         <tbody></tbody>
                     </table>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="descripcionCompra" class="form-label">Descripción</label>
+                    <textarea 
+                        id="descripcionCompra" 
+                        name="descripcionCompra" 
+                        class="form-control" 
+                        rows="3" 
+                        maxlength="500" 
+                        placeholder="Escriba aquí una breve descripción de la compra..."></textarea>
                 </div>
 
                 <!-- Campos ocultos -->
@@ -304,9 +328,39 @@
                     alert("Debe agregar al menos un producto.");
                     return false;
                 }
+
+                const formaPago = document.getElementById("formaPago").value;
+                const total = parseFloat(document.getElementById("totalCompra").value) || 0;
+                const montoEfectivo = parseFloat(document.getElementById("montoEfectivo")?.value) || 0;
+                const montoTransferencia = parseFloat(document.getElementById("montoTransferencia")?.value) || 0;
+
+                // Validaciones según forma de pago
+                if (formaPago === "Efectivo") {
+                    if (montoEfectivo < total) {
+                        alert("El monto en efectivo debe ser igual o mayor al total.");
+                        return false;
+                    }
+                } else if (formaPago === "Transferencia") {
+                    if (montoTransferencia < total) {
+                        alert("El monto en transferencia debe ser igual o mayor al total.");
+                        return false;
+                    }
+                } else if (formaPago === "Mixto") {
+                    const suma = montoEfectivo + montoTransferencia;
+                    if (suma < total) {
+                        alert("La suma de efectivo y transferencia debe cubrir al menos el total.");
+                        return false;
+                    }
+                } else {
+                    alert("Debe seleccionar una forma de pago.");
+                    return false;
+                }
+
+                // Guardar el detalle como JSON para enviar al servlet
                 document.getElementById("detalleJsonCompra").value = JSON.stringify(detalleCompra);
                 return true;
             }
+
             function cambiarProveedor() {
                 const form = document.getElementById("formCompra");
                 form.action = "SVRealizarCompraNueva"; // mandamos al servlet de recarga

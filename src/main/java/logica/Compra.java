@@ -6,10 +6,9 @@ package logica;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Date;
-import java.util.List;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -19,7 +18,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -56,8 +54,7 @@ public class Compra implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Column(name = "fecha_compra")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date fechaCompra;
+    private LocalDateTime fechaCompra;
     @Size(max = 200)
     @Column(name = "descripcion_compra")
     private String descripcionCompra;
@@ -66,14 +63,13 @@ public class Compra implements Serializable {
     @NotNull
     @Column(name = "total_compra")
     private BigDecimal totalCompra;
-    @Size(max = 50)
+    @Basic(optional = false)
+    @NotNull
     @Column(name = "estado_compra")
-    private String estadoCompra;
+    private boolean estadoCompra;
     @JoinColumn(name = "id_proveedor", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Proveedor idProveedor;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "nFactura")
-    private List<CompraDetallada> compraDetalladaList;
 
     public Compra() {
     }
@@ -82,11 +78,12 @@ public class Compra implements Serializable {
         this.id = id;
     }
 
-    public Compra(Integer id, String nFactura, Date fechaCompra, BigDecimal totalCompra) {
+    public Compra(Integer id, String nFactura, LocalDateTime fechaCompra, BigDecimal totalCompra, boolean estadoCompra) {
         this.id = id;
         this.nFactura = nFactura;
         this.fechaCompra = fechaCompra;
         this.totalCompra = totalCompra;
+        this.estadoCompra = estadoCompra;
     }
 
     public Integer getId() {
@@ -105,11 +102,11 @@ public class Compra implements Serializable {
         this.nFactura = nFactura;
     }
 
-    public Date getFechaCompra() {
+    public LocalDateTime getFechaCompra() {
         return fechaCompra;
     }
 
-    public void setFechaCompra(Date fechaCompra) {
+    public void setFechaCompra(LocalDateTime fechaCompra) {
         this.fechaCompra = fechaCompra;
     }
 
@@ -129,11 +126,11 @@ public class Compra implements Serializable {
         this.totalCompra = totalCompra;
     }
 
-    public String getEstadoCompra() {
+    public boolean getEstadoCompra() {
         return estadoCompra;
     }
 
-    public void setEstadoCompra(String estadoCompra) {
+    public void setEstadoCompra(boolean estadoCompra) {
         this.estadoCompra = estadoCompra;
     }
 
@@ -143,14 +140,6 @@ public class Compra implements Serializable {
 
     public void setIdProveedor(Proveedor idProveedor) {
         this.idProveedor = idProveedor;
-    }
-
-    public List<CompraDetallada> getCompraDetalladaList() {
-        return compraDetalladaList;
-    }
-
-    public void setCompraDetalladaList(List<CompraDetallada> compraDetalladaList) {
-        this.compraDetalladaList = compraDetalladaList;
     }
 
     @Override
@@ -177,5 +166,5 @@ public class Compra implements Serializable {
     public String toString() {
         return "logica.Compra[ id=" + id + " ]";
     }
-    
+
 }

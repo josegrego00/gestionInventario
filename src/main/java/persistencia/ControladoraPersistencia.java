@@ -168,4 +168,8 @@ public class ControladoraPersistencia {
         return compraJpaController.listarComprasFiltradas(proveedor, localfecha, offset, registrosPorPagina);
     }
 
+    public void crearCompra(Compra compra) {
+        compraJpaController.create(compra);
+    }
+
 }

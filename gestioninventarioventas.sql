@@ -15,11 +15,13 @@ id int primary key auto_increment,
 dniCliente varchar(20) not null unique,
 nombre_cliente varchar(200) not null
 );
-describe venta;
+describe compra;
 Select * from venta_detallada;
-Select * from producto;
+Select * from compra;
 Select * from cliente;
 
+alter table compra 
+modify column estado_compra boolean not null;
 
 create table producto(
 id int primary key auto_increment,

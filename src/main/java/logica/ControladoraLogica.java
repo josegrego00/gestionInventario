@@ -68,6 +68,23 @@ public class ControladoraLogica {
 
     }
 
+    // Verifica si contiene script (intento de XSS)
+    private boolean contieneScriptMalicioso(String datos) {
+        String lowerInput = datos.toLowerCase();
+
+        // Bloquear etiquetas HTML/JS peligrosas
+        String[] patronesMaliciosos = {
+            "<script", "</script>", "<iframe", "<img", "onerror", "onload", "javascript:"
+        };
+
+        for (String patron : patronesMaliciosos) {
+            if (lowerInput.contains(patron)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     //-----------------------------Logica de Productos----------------------------------
     //Guardar  un producto
     public void guardarProductoNuevo(String codigoBarra, String nombre, String descripcion, double costoCompra, int inventarioInicial, int categoriaId, int proveedorId) {
@@ -677,4 +694,59 @@ public class ControladoraLogica {
         return controladoraPersistencia.listarComprasParaPaginado(proveedor, localfecha, offset, registrosPorPagina);
     }
 
+    public int crearCompraProveedor(String idProveedor, String numeroFactura, LocalDateTime fechaHora, String descripcionCompra, boolean estado, Double totalCompra) throws Exception {
+        Integer idProv;
+        try {
+            idProv = Integer.parseInt(idProveedor);
+        } catch (NumberFormatException e) {
+            throw new Exception("El ID del proveedor no es válido.");
+        }
+        
+        if (!validarProveedorPorId(idProv)) {
+            throw new Exception("El proveedor no existe en la base de datos.");
+        }
+        // 2. Validar número de factura
+        if (!validarTexto(numeroFactura) || contieneScriptMalicioso(numeroFactura)) {
+            throw new Exception("Número de factura inválido.");
+        }
+
+        // 3. Validar descripción
+        if (!validarTexto(descripcionCompra) || contieneScriptMalicioso(descripcionCompra)) {
+            throw new Exception("Descripción inválida.");
+        }
+
+        // 4. Validar monto total
+        if (!validadMontoCompra(totalCompra)) {
+            throw new Exception("El total de la compra debe ser mayor a 0.");
+        }
+        
+        Proveedor proveedor=buscarProveedorPorId(idProv);
+        Compra compra= new Compra();
+        compra.setNFactura(numeroFactura);
+        compra.setIdProveedor(proveedor);
+        compra.setNFactura(numeroFactura);
+        compra.setDescripcionCompra(descripcionCompra);
+        compra.setTotalCompra(BigDecimal.valueOf(totalCompra));
+        compra.setFechaCompra(fechaHora);
+        compra.setEstadoCompra(estado);
+        controladoraPersistencia.crearCompra(compra);
+        return compra.getId();
+    }
+
+    public boolean validadMontoCompra(Double totalCompra) {
+        if (totalCompra == null || totalCompra <= 0) {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean validarProveedorPorId(Integer idPorveedor) {
+        List<Proveedor> listaProveedorExis = controladoraPersistencia.listarProveedor();
+        for (Proveedor prove : listaProveedorExis) {
+            if (prove.getId().equals(idPorveedor)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

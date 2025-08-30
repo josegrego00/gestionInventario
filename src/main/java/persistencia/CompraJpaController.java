@@ -7,20 +7,17 @@ package persistencia;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import javax.persistence.Query;
-import javax.persistence.EntityNotFoundException;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
-import logica.Proveedor;
-import logica.CompraDetallada;
-import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.Query;
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import logica.Compra;
-import persistencia.exceptions.IllegalOrphanException;
+import logica.Proveedor;
 import persistencia.exceptions.NonexistentEntityException;
 
 /**
@@ -34,9 +31,9 @@ public class CompraJpaController implements Serializable {
     }
 
     public CompraJpaController() {
-        this.emf = Persistence.createEntityManagerFactory("gestionPU");
+    this.emf=Persistence.createEntityManagerFactory("gestionPU");
     }
-
+    
     private EntityManagerFactory emf = null;
 
     public EntityManager getEntityManager() {
@@ -44,9 +41,6 @@ public class CompraJpaController implements Serializable {
     }
 
     public void create(Compra compra) {
-        if (compra.getCompraDetalladaList() == null) {
-            compra.setCompraDetalladaList(new ArrayList<CompraDetallada>());
-        }
         EntityManager em = null;
         try {
             em = getEntityManager();
@@ -56,25 +50,10 @@ public class CompraJpaController implements Serializable {
                 idProveedor = em.getReference(idProveedor.getClass(), idProveedor.getId());
                 compra.setIdProveedor(idProveedor);
             }
-            List<CompraDetallada> attachedCompraDetalladaList = new ArrayList<CompraDetallada>();
-            for (CompraDetallada compraDetalladaListCompraDetalladaToAttach : compra.getCompraDetalladaList()) {
-                compraDetalladaListCompraDetalladaToAttach = em.getReference(compraDetalladaListCompraDetalladaToAttach.getClass(), compraDetalladaListCompraDetalladaToAttach.getId());
-                attachedCompraDetalladaList.add(compraDetalladaListCompraDetalladaToAttach);
-            }
-            compra.setCompraDetalladaList(attachedCompraDetalladaList);
             em.persist(compra);
             if (idProveedor != null) {
                 idProveedor.getCompraList().add(compra);
                 idProveedor = em.merge(idProveedor);
-            }
-            for (CompraDetallada compraDetalladaListCompraDetallada : compra.getCompraDetalladaList()) {
-                Compra oldNFacturaOfCompraDetalladaListCompraDetallada = compraDetalladaListCompraDetallada.getNFactura();
-                compraDetalladaListCompraDetallada.setNFactura(compra);
-                compraDetalladaListCompraDetallada = em.merge(compraDetalladaListCompraDetallada);
-                if (oldNFacturaOfCompraDetalladaListCompraDetallada != null) {
-                    oldNFacturaOfCompraDetalladaListCompraDetallada.getCompraDetalladaList().remove(compraDetalladaListCompraDetallada);
-                    oldNFacturaOfCompraDetalladaListCompraDetallada = em.merge(oldNFacturaOfCompraDetalladaListCompraDetallada);
-                }
             }
             em.getTransaction().commit();
         } finally {
@@ -84,7 +63,7 @@ public class CompraJpaController implements Serializable {
         }
     }
 
-    public void edit(Compra compra) throws IllegalOrphanException, NonexistentEntityException, Exception {
+    public void edit(Compra compra) throws NonexistentEntityException, Exception {
         EntityManager em = null;
         try {
             em = getEntityManager();
@@ -92,31 +71,10 @@ public class CompraJpaController implements Serializable {
             Compra persistentCompra = em.find(Compra.class, compra.getId());
             Proveedor idProveedorOld = persistentCompra.getIdProveedor();
             Proveedor idProveedorNew = compra.getIdProveedor();
-            List<CompraDetallada> compraDetalladaListOld = persistentCompra.getCompraDetalladaList();
-            List<CompraDetallada> compraDetalladaListNew = compra.getCompraDetalladaList();
-            List<String> illegalOrphanMessages = null;
-            for (CompraDetallada compraDetalladaListOldCompraDetallada : compraDetalladaListOld) {
-                if (!compraDetalladaListNew.contains(compraDetalladaListOldCompraDetallada)) {
-                    if (illegalOrphanMessages == null) {
-                        illegalOrphanMessages = new ArrayList<String>();
-                    }
-                    illegalOrphanMessages.add("You must retain CompraDetallada " + compraDetalladaListOldCompraDetallada + " since its NFactura field is not nullable.");
-                }
-            }
-            if (illegalOrphanMessages != null) {
-                throw new IllegalOrphanException(illegalOrphanMessages);
-            }
             if (idProveedorNew != null) {
                 idProveedorNew = em.getReference(idProveedorNew.getClass(), idProveedorNew.getId());
                 compra.setIdProveedor(idProveedorNew);
             }
-            List<CompraDetallada> attachedCompraDetalladaListNew = new ArrayList<CompraDetallada>();
-            for (CompraDetallada compraDetalladaListNewCompraDetalladaToAttach : compraDetalladaListNew) {
-                compraDetalladaListNewCompraDetalladaToAttach = em.getReference(compraDetalladaListNewCompraDetalladaToAttach.getClass(), compraDetalladaListNewCompraDetalladaToAttach.getId());
-                attachedCompraDetalladaListNew.add(compraDetalladaListNewCompraDetalladaToAttach);
-            }
-            compraDetalladaListNew = attachedCompraDetalladaListNew;
-            compra.setCompraDetalladaList(compraDetalladaListNew);
             compra = em.merge(compra);
             if (idProveedorOld != null && !idProveedorOld.equals(idProveedorNew)) {
                 idProveedorOld.getCompraList().remove(compra);
@@ -125,17 +83,6 @@ public class CompraJpaController implements Serializable {
             if (idProveedorNew != null && !idProveedorNew.equals(idProveedorOld)) {
                 idProveedorNew.getCompraList().add(compra);
                 idProveedorNew = em.merge(idProveedorNew);
-            }
-            for (CompraDetallada compraDetalladaListNewCompraDetallada : compraDetalladaListNew) {
-                if (!compraDetalladaListOld.contains(compraDetalladaListNewCompraDetallada)) {
-                    Compra oldNFacturaOfCompraDetalladaListNewCompraDetallada = compraDetalladaListNewCompraDetallada.getNFactura();
-                    compraDetalladaListNewCompraDetallada.setNFactura(compra);
-                    compraDetalladaListNewCompraDetallada = em.merge(compraDetalladaListNewCompraDetallada);
-                    if (oldNFacturaOfCompraDetalladaListNewCompraDetallada != null && !oldNFacturaOfCompraDetalladaListNewCompraDetallada.equals(compra)) {
-                        oldNFacturaOfCompraDetalladaListNewCompraDetallada.getCompraDetalladaList().remove(compraDetalladaListNewCompraDetallada);
-                        oldNFacturaOfCompraDetalladaListNewCompraDetallada = em.merge(oldNFacturaOfCompraDetalladaListNewCompraDetallada);
-                    }
-                }
             }
             em.getTransaction().commit();
         } catch (Exception ex) {
@@ -154,7 +101,7 @@ public class CompraJpaController implements Serializable {
         }
     }
 
-    public void destroy(Integer id) throws IllegalOrphanException, NonexistentEntityException {
+    public void destroy(Integer id) throws NonexistentEntityException {
         EntityManager em = null;
         try {
             em = getEntityManager();
@@ -165,17 +112,6 @@ public class CompraJpaController implements Serializable {
                 compra.getId();
             } catch (EntityNotFoundException enfe) {
                 throw new NonexistentEntityException("The compra with id " + id + " no longer exists.", enfe);
-            }
-            List<String> illegalOrphanMessages = null;
-            List<CompraDetallada> compraDetalladaListOrphanCheck = compra.getCompraDetalladaList();
-            for (CompraDetallada compraDetalladaListOrphanCheckCompraDetallada : compraDetalladaListOrphanCheck) {
-                if (illegalOrphanMessages == null) {
-                    illegalOrphanMessages = new ArrayList<String>();
-                }
-                illegalOrphanMessages.add("This Compra (" + compra + ") cannot be destroyed since the CompraDetallada " + compraDetalladaListOrphanCheckCompraDetallada + " in its compraDetalladaList field has a non-nullable NFactura field.");
-            }
-            if (illegalOrphanMessages != null) {
-                throw new IllegalOrphanException(illegalOrphanMessages);
             }
             Proveedor idProveedor = compra.getIdProveedor();
             if (idProveedor != null) {

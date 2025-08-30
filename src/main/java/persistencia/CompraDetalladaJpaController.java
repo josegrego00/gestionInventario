@@ -12,7 +12,6 @@ import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import logica.Compra;
 import logica.CompraDetallada;
 import logica.Producto;
 import persistencia.exceptions.NonexistentEntityException;
@@ -37,21 +36,12 @@ public class CompraDetalladaJpaController implements Serializable {
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            Compra NFactura = compraDetallada.getNFactura();
-            if (NFactura != null) {
-                NFactura = em.getReference(NFactura.getClass(), NFactura.getId());
-                compraDetallada.setNFactura(NFactura);
-            }
             Producto idProducto = compraDetallada.getIdProducto();
             if (idProducto != null) {
                 idProducto = em.getReference(idProducto.getClass(), idProducto.getId());
                 compraDetallada.setIdProducto(idProducto);
             }
             em.persist(compraDetallada);
-            if (NFactura != null) {
-                NFactura.getCompraDetalladaList().add(compraDetallada);
-                NFactura = em.merge(NFactura);
-            }
             if (idProducto != null) {
                 idProducto.getCompraDetalladaList().add(compraDetallada);
                 idProducto = em.merge(idProducto);
@@ -70,27 +60,13 @@ public class CompraDetalladaJpaController implements Serializable {
             em = getEntityManager();
             em.getTransaction().begin();
             CompraDetallada persistentCompraDetallada = em.find(CompraDetallada.class, compraDetallada.getId());
-            Compra NFacturaOld = persistentCompraDetallada.getNFactura();
-            Compra NFacturaNew = compraDetallada.getNFactura();
             Producto idProductoOld = persistentCompraDetallada.getIdProducto();
             Producto idProductoNew = compraDetallada.getIdProducto();
-            if (NFacturaNew != null) {
-                NFacturaNew = em.getReference(NFacturaNew.getClass(), NFacturaNew.getId());
-                compraDetallada.setNFactura(NFacturaNew);
-            }
             if (idProductoNew != null) {
                 idProductoNew = em.getReference(idProductoNew.getClass(), idProductoNew.getId());
                 compraDetallada.setIdProducto(idProductoNew);
             }
             compraDetallada = em.merge(compraDetallada);
-            if (NFacturaOld != null && !NFacturaOld.equals(NFacturaNew)) {
-                NFacturaOld.getCompraDetalladaList().remove(compraDetallada);
-                NFacturaOld = em.merge(NFacturaOld);
-            }
-            if (NFacturaNew != null && !NFacturaNew.equals(NFacturaOld)) {
-                NFacturaNew.getCompraDetalladaList().add(compraDetallada);
-                NFacturaNew = em.merge(NFacturaNew);
-            }
             if (idProductoOld != null && !idProductoOld.equals(idProductoNew)) {
                 idProductoOld.getCompraDetalladaList().remove(compraDetallada);
                 idProductoOld = em.merge(idProductoOld);
@@ -127,11 +103,6 @@ public class CompraDetalladaJpaController implements Serializable {
                 compraDetallada.getId();
             } catch (EntityNotFoundException enfe) {
                 throw new NonexistentEntityException("The compraDetallada with id " + id + " no longer exists.", enfe);
-            }
-            Compra NFactura = compraDetallada.getNFactura();
-            if (NFactura != null) {
-                NFactura.getCompraDetalladaList().remove(compraDetallada);
-                NFactura = em.merge(NFactura);
             }
             Producto idProducto = compraDetallada.getIdProducto();
             if (idProducto != null) {
