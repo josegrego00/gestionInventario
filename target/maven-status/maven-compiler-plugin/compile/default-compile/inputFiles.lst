@@ -14,6 +14,7 @@
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/logica/Usuarios.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/logica/Rol.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/logica/Compra.java
+/home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/logica/DetalleCompraDTO.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/persistencia/ProductoJpaController1.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/persistencia/VentaJpaController.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/persistencia/ProveedorJpaController2.java

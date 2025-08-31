@@ -31,9 +31,9 @@ public class CompraJpaController implements Serializable {
     }
 
     public CompraJpaController() {
-    this.emf=Persistence.createEntityManagerFactory("gestionPU");
+        this.emf = Persistence.createEntityManagerFactory("gestionPU");
     }
-    
+
     private EntityManagerFactory emf = null;
 
     public EntityManager getEntityManager() {
@@ -212,6 +212,35 @@ public class CompraJpaController implements Serializable {
         } finally {
             em.close();
         }
-
     }
+
+    public long contarComprasFiltradas(String proveedor, String fecha) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            StringBuilder jpql = new StringBuilder("SELECT COUNT(c) FROM Compra c WHERE 1=1");
+
+            if (proveedor != null && !proveedor.trim().isEmpty()) {
+                jpql.append(" AND LOWER(c.idProveedor.nombreProveedor) LIKE LOWER(:proveedor)");
+            }
+            if (fecha != null && !fecha.trim().isEmpty()) {
+                // Convertir LocalDateTime a DATE en JPQL
+                jpql.append(" AND FUNCTION('DATE', c.fechaCompra) = :fecha");
+            }
+
+            TypedQuery<Long> query = em.createQuery(jpql.toString(), Long.class);
+
+            if (proveedor != null && !proveedor.trim().isEmpty()) {
+                query.setParameter("proveedor", "%" + proveedor + "%");
+            }
+            if (fecha != null && !fecha.trim().isEmpty()) {
+                query.setParameter("fecha", LocalDate.parse(fecha));
+                // OJO: fecha debe venir en formato "yyyy-MM-dd"
+            }
+
+            return query.getSingleResult();
+        } finally {
+            em.close();
+        }
+    }
+
 }

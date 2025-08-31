@@ -34,6 +34,7 @@ persistencia/CompraDetalladaJpaController.class
 servlets/SVRealizarCompraNueva.class
 logica/ControladoraLogica.class
 logica/Usuarios_.class
+logica/DetalleCompraDTO.class
 servlets/SVRegistrarVentaDetalle.class
 logica/CompraDetallada.class
 persistencia/CompraJpaController1.class
@@ -44,10 +45,12 @@ servlets/SVListarProductosVenta.class
 servlets/SVListarCategoriaYProveedor.class
 persistencia/CategoriaJpaController2.class
 servlets/SVEliminarProducto.class
+logica/ControladoraLogica$2.class
 persistencia/ProductoJpaController.class
 logica/Venta_.class
 logica/Categoria.class
 persistencia/ProveedorJpaController3.class
+.netbeans_automatic_build
 logica/Cliente_.class
 servlets/SVListarProductos.class
 logica/Venta.class

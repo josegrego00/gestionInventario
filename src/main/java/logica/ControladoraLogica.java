@@ -694,14 +694,14 @@ public class ControladoraLogica {
         return controladoraPersistencia.listarComprasParaPaginado(proveedor, localfecha, offset, registrosPorPagina);
     }
 
-    public int crearCompraProveedor(String idProveedor, String numeroFactura, LocalDateTime fechaHora, String descripcionCompra, boolean estado, Double totalCompra) throws Exception {
+    public String crearCompraProveedor(String idProveedor, String numeroFactura, LocalDateTime fechaHora, String descripcionCompra, boolean estado, Double totalCompra) throws Exception {
         Integer idProv;
         try {
             idProv = Integer.parseInt(idProveedor);
         } catch (NumberFormatException e) {
             throw new Exception("El ID del proveedor no es válido.");
         }
-        
+
         if (!validarProveedorPorId(idProv)) {
             throw new Exception("El proveedor no existe en la base de datos.");
         }
@@ -719,9 +719,9 @@ public class ControladoraLogica {
         if (!validadMontoCompra(totalCompra)) {
             throw new Exception("El total de la compra debe ser mayor a 0.");
         }
-        
-        Proveedor proveedor=buscarProveedorPorId(idProv);
-        Compra compra= new Compra();
+
+        Proveedor proveedor = buscarProveedorPorId(idProv);
+        Compra compra = new Compra();
         compra.setNFactura(numeroFactura);
         compra.setIdProveedor(proveedor);
         compra.setNFactura(numeroFactura);
@@ -730,7 +730,7 @@ public class ControladoraLogica {
         compra.setFechaCompra(fechaHora);
         compra.setEstadoCompra(estado);
         controladoraPersistencia.crearCompra(compra);
-        return compra.getId();
+        return compra.getNFactura();
     }
 
     public boolean validadMontoCompra(Double totalCompra) {
@@ -748,5 +748,62 @@ public class ControladoraLogica {
             }
         }
         return false;
+    }
+
+    public long contarCompras(String proveedor, String fecha) {
+        return controladoraPersistencia.contarCompras(proveedor, fecha);
+    }
+
+    public void procesarDetallesCompra(String idCompra, String detalleJson) {
+        if (detalleJson == null || detalleJson.trim().isEmpty()) {
+            return;
+        }
+
+        try {
+            Gson gson = new Gson();
+            Type tipoLista = new TypeToken<List<DetalleCompraDTO>>() {
+            }.getType();
+            List<DetalleCompraDTO> detalles = gson.fromJson(detalleJson, tipoLista);
+
+            Compra compra = buscarCompraPorId(idCompra);
+
+            for (DetalleCompraDTO item : detalles) {
+                System.out.println("DEBUG >>> Producto: " + item.getProductoCodigo()
+                        + " | Cantidad: " + item.getCantidadComprada()
+                        + " | Precio: " + item.getPrecioProductoComprado());
+                CompraDetallada compraDetallada = new CompraDetallada();
+
+                // Buscar el producto por código de barras
+                Producto producto = buscarProductoPorCodigoBarra(item.getProductoCodigo());
+
+                // Mapear datos
+                compraDetallada.setNFactura(compra);
+                compraDetallada.setIdProducto(producto);
+                compraDetallada.setCantidadComprada(item.getCantidadComprada());
+                compraDetallada.setPrecioProductoComprado(item.getPrecioProductoComprado());
+
+                // Guardar detalle de la compra
+                controladoraPersistencia.guardarDetalleCompra(compraDetallada);
+
+                /*                // Aumentar stock del producto
+                BigDecimal stockActual = producto.getStock() != null ? producto.getStock() : BigDecimal.ZERO;
+                BigDecimal nuevoStock = stockActual.add(item.getCantidadComprada());
+                producto.setStock(nuevoStock);
+                controladoraPersistencia.editarProducto(producto);*/
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private Compra buscarCompraPorId(String idCompra) {
+        List<Compra> listaCompras = controladoraPersistencia.listarCompras();
+        for (Compra compras : listaCompras) {
+            if (compras.getNFactura().equals(idCompra)) {
+                return compras;
+            }
+        }
+        return null;
     }
 }

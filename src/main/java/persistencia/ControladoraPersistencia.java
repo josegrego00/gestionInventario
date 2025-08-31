@@ -13,6 +13,7 @@ import javax.persistence.TypedQuery;
 import logica.Categoria;
 import logica.Cliente;
 import logica.Compra;
+import logica.CompraDetallada;
 import logica.Producto;
 import logica.Proveedor;
 import logica.Venta;
@@ -33,6 +34,7 @@ public class ControladoraPersistencia {
     private VentaJpaController ventaJpaController;
     private VentaDetalladaJpaController ventaDetalladaJpaController;
     private CompraJpaController compraJpaController;
+    private CompraDetalladaJpaController compraDetalladaJpaController;
 
     public ControladoraPersistencia() {
 
@@ -43,6 +45,7 @@ public class ControladoraPersistencia {
         ventaJpaController = new VentaJpaController();
         ventaDetalladaJpaController = new VentaDetalladaJpaController();
         compraJpaController = new CompraJpaController();
+        compraDetalladaJpaController= new CompraDetalladaJpaController();
     }
 
     public long contarVenta(String cliente, String fecha) {
@@ -170,6 +173,18 @@ public class ControladoraPersistencia {
 
     public void crearCompra(Compra compra) {
         compraJpaController.create(compra);
+    }
+
+    public long contarCompras(String proveedor, String fecha) {
+      return compraJpaController.contarComprasFiltradas(proveedor, fecha);
+    }
+
+    public List<Compra> listarCompras() {
+       return compraJpaController.findCompraEntities();
+    }
+
+    public void guardarDetalleCompra(CompraDetallada compraDetallada) {
+        compraDetalladaJpaController.create(compraDetallada);
     }
 
 }

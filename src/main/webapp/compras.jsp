@@ -19,45 +19,40 @@
         <% if (session.getAttribute("mensaje") != null) {%>
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             <%= session.getAttribute("mensaje")%>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" 
-                    aria-label="Close"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
-        <% session.removeAttribute("mensaje"); // Limpia después de mostrar %>
-        <% } %>
+        <% session.removeAttribute("mensaje"); %>
+        <% }%>
 
         <div class="container mt-4">
             <h2 class="mb-3">Historial de Compras</h2>
-            <a href="SVRealizarCompraNueva" class="btn btn-primary mb-3">Registrar 
-                Compra</a>
+            <a href="SVRealizarCompraNueva" class="btn btn-primary mb-3">Registrar Compra</a>
 
-            <!-- Botones del filtro.-->
+            <!-- Botones del filtro -->
             <form method="GET" action="SVListarComprasReportes" class="row g-3 mb-4">
                 <div class="col-md-4">
                     <input type="text" name="proveedor" class="form-control" 
                            placeholder="Nombre del proveedor" 
-                           value="<%= request.getParameter("proveedor") != null
-                                   ? request.getParameter("proveedor") : ""%>">
+                           value="<%= request.getParameter("proveedor") != null ? request.getParameter("proveedor") : ""%>">
                 </div>
                 <div class="col-md-4">
                     <input type="date" name="fecha" class="form-control"
-                           value="<%= request.getParameter("fecha") != null
-                                   ? request.getParameter("fecha") : ""%>">
+                           value="<%= request.getParameter("fecha") != null ? request.getParameter("fecha") : ""%>">
                 </div>
                 <div class="col-md-4">
                     <button type="submit" class="btn btn-primary">Filtrar</button>
-                    <a href="SVListarComprasReportes" class="btn
-                       btn-secondary">Limpiar</a>
+                    <a href="SVListarComprasReportes" class="btn btn-secondary">Limpiar</a>
                 </div>
             </form>
 
-            <table class="table table-striped">
-                <thead>
+            <!-- Tabla de compras -->
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
                     <tr>
                         <th>ID</th>
                         <th>Fecha</th>
                         <th>Nombre Proveedor</th>
                         <th>Total</th>
-                        <th>Tipo Pago</th>
                         <th>Estado</th>
                         <th>Acciones</th>
                     </tr>
@@ -68,51 +63,47 @@
                         if (listaCompras != null && !listaCompras.isEmpty()) {
                             for (Compra compra : listaCompras) {
                     %>
+                    <tr>
+                        <td><%= compra.getNFactura() %></td>
+                        <td>
+                            <%
+                                String fechaOriginal = compra.getFechaCompra().toString();
+                                String fechaFormateada = fechaOriginal.replace("T", " ");
+                                if (fechaFormateada.contains(".")) {
+                                    fechaFormateada = fechaFormateada.substring(0, fechaFormateada.indexOf("."));
+                                }
+                            %>
+                            <%= fechaFormateada%>
+                        </td>
+                        <td><%= compra.getIdProveedor().getNombreProveedor()%></td>
+                        <td><%= compra.getTotalCompra()%></td>
 
-                <td><%= compra.getId()%></td>
-                <td>
+                        <td><%= compra.getEstadoCompra() ? "Activa" : "Anulada"%></td>
+                        <td>
+                            <a href="SVGenerarFacturaPDF?idFactura=<%= compra.getId()%>" 
+                               class="btn btn-warning btn-sm">Generar PDF</a>
+                            <form action="SVAnularCompra" method="POST" style="display:inline;">
+                                <input type="hidden" name="idFactura" value="<%= compra.getId()%>">
+                                <button type="submit" class="btn btn-danger btn-sm" 
+                                        onclick="return confirmarCancelacion()">Anular</button>
+                            </form>
+                        </td>
+                    </tr>
                     <%
-                        String fechaOriginal = compra.getFechaCompra().toString();
-                        String fechaFormateada = fechaOriginal.replace("T", " ");
-                        if (fechaFormateada.contains(".")) {
-                            fechaFormateada = fechaFormateada.substring(0,
-                                    fechaFormateada.indexOf("."));
                         }
+                    } else {
                     %>
-                    <%= fechaFormateada%>
-                </td>
-                <td><%= compra.getIdProveedor().getNombreProveedor()%></td>
-                <td><%= compra.getTotalCompra()%></td>
-
-                : "Anulada"%></td>
-                <td>
-                    <a href="SVGenerarFacturaPDF?idFactura=<%=compra.getId()%>" class="btn btn-warning btn-sm">Generar PDF</a>
-                    <form action="SVAnularCompra" method="POST" 
-                          style="display: inline;">
-                        <input type="hidden" name="idFactura" value="<%=compra.getId()%>">
-                        <button type="submit" class="btn btn-danger btn-sm" 
-                                onclick="return confirmarCancelacion()">Anular Factura</button>
-                    </form>
-                </td>
-
-                <%
-                    }
-                } else {
-                %>
-                <tr>
-                    <td colspan="7" class="text-center">No hay Facturas a 
-                        mostrar.</td>
-                </tr>
-                <%
-                    }
-                %></tbody>
+                    <tr>
+                        <td colspan="7" class="text-center">No hay Facturas a mostrar.</td>
+                    </tr>
+                    <% } %>
+                </tbody>
             </table>
 
-            <!-- Ajuste con Botones para que se pasen con paginacion -->
+            <!-- Paginación -->
             <div class="d-flex justify-content-center mt-4">
                 <nav aria-label="Page navigation">
                     <ul class="pagination">
-
                         <%
                             Integer paginaActualAttr = (Integer) request.getAttribute("paginaActual");
                             Integer totalPaginasAttr = (Integer) request.getAttribute("totalPaginas");
@@ -129,10 +120,7 @@
 
                         <!-- Botón Anterior -->
                         <li class="page-item <%= (paginaActual == 1) ? "disabled" : ""%>">
-                            <a class="page-link" 
-                               href="SVListarComprasReportes?page=<%= paginaActual - 1%><%= extraParams%>">
-                                Anterior
-                            </a>
+                            <a class="page-link" href="SVListarComprasReportes?page=<%= paginaActual - 1%><%= extraParams%>">Anterior</a>
                         </li>
 
                         <!-- Números de página -->
@@ -140,30 +128,23 @@
                             for (int i = 1; i <= totalPaginas; i++) {
                         %>
                         <li class="page-item <%= (i == paginaActual) ? "active" : ""%>">
-                            <a class="page-link" 
-                               href="SVListarComprasReportes?page=<%= i%><%= extraParams%>">
-                                <%= i%>
-                            </a>
+                            <a class="page-link" href="SVListarComprasReportes?page=<%= i%><%= extraParams%>"><%= i%></a>
                         </li>
-                        <%
-                            }
-                        %>
+                        <% }%>
 
                         <!-- Botón Siguiente -->
                         <li class="page-item <%= (paginaActual == totalPaginas) ? "disabled" : ""%>">
-                            <a class="page-link" 
-                               href="SVListarComprasReportes?page=<%= paginaActual + 1%><%= extraParams%>">
-                                Siguiente
-                            </a>
+                            <a class="page-link" href="SVListarComprasReportes?page=<%= paginaActual + 1%><%= extraParams%>">Siguiente</a>
                         </li>
-
                     </ul>
                 </nav>
             </div>
-            <script>
-                function confirmarCancelacion() {
-                    return confirm("¿Está seguro que desea Anular esta factura? ");
-                }
-            </script>        
+        </div>
+
+        <script>
+            function confirmarCancelacion() {
+                return confirm("¿Está seguro que desea anular esta factura?");
+            }
+        </script>
     </body>
 </html>

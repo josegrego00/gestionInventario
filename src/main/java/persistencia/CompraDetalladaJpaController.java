@@ -10,6 +10,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.Persistence;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import logica.CompraDetallada;
@@ -25,6 +26,11 @@ public class CompraDetalladaJpaController implements Serializable {
     public CompraDetalladaJpaController(EntityManagerFactory emf) {
         this.emf = emf;
     }
+
+    public CompraDetalladaJpaController() {
+    this.emf=Persistence.createEntityManagerFactory("gestionPU");
+    }
+    
     private EntityManagerFactory emf = null;
 
     public EntityManager getEntityManager() {

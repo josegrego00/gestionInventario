@@ -49,7 +49,7 @@
 
 
             <table class="table table-striped">
-                <thead>
+                <thead class="table-dark">
                     <tr>
                         <th>ID</th>
                         <th>Fecha</th>
