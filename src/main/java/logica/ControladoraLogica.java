@@ -771,6 +771,8 @@ public class ControladoraLogica {
                 System.out.println("DEBUG >>> Producto: " + item.getProductoCodigo()
                         + " | Cantidad: " + item.getCantidadComprada()
                         + " | Precio: " + item.getPrecioProductoComprado());
+                System.out.println("DEBUG JSON >>> " + detalleJson);
+
                 CompraDetallada compraDetallada = new CompraDetallada();
 
                 // Buscar el producto por código de barras
@@ -805,5 +807,9 @@ public class ControladoraLogica {
             }
         }
         return null;
+    }
+
+    public void ajusteIncrementoInventarioProductos(String idFacturaCompra) {
+       controladoraPersistencia.ajusteIncrementoInventarioProductos(idFacturaCompra);
     }
 }

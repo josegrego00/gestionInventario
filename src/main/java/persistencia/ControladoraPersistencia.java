@@ -187,4 +187,8 @@ public class ControladoraPersistencia {
         compraDetalladaJpaController.create(compraDetallada);
     }
 
+    public void ajusteIncrementoInventarioProductos(String idFacturaCompra) {
+        compraJpaController.ajusteIncrementoInventarioProductos(idFacturaCompra);
+    }
+
 }

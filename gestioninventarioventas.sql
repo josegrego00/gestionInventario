@@ -1,6 +1,8 @@
 create database gestion_inventario_venta;
 use gestion_inventario_venta;
 
+show procedure status where db ='gestion_inventario_venta';
+
 show databases;
 show tables;
 describe venta_detallada;
@@ -15,8 +17,10 @@ id int primary key auto_increment,
 dniCliente varchar(20) not null unique,
 nombre_cliente varchar(200) not null
 );
-describe compra;
+describe compra_detallada;
 Select * from venta_detallada;
+
+Select * from compra_detallada;
 Select * from compra;
 Select * from cliente;
 
@@ -145,5 +149,29 @@ FOREIGN KEY (id_proveedor) REFERENCES proveedor(id);
 ALTER TABLE compra_detallada 
 ADD CONSTRAINT fk_compra_producto 
 FOREIGN KEY (id_producto) REFERENCES producto(id);
-```
 
+
+DELIMITER $$
+CREATE PROCEDURE sp_incrementar_inventario(
+     IN id_factura VARCHAR(300)
+)
+BEGIN
+    -- Manejador de excepciones: si algo falla, hace rollback
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    -- Inicia la transacción
+    START TRANSACTION;
+
+    UPDATE producto p
+    JOIN compra_detallada cd ON p.id = cd.id_producto
+    SET p.inventario = p.inventario + cd.cantidad_comprada
+    WHERE cd.n_factura = id_factura;
+
+    -- Confirma cambios
+    COMMIT;
+END;
+$$
+DELIMITER ;

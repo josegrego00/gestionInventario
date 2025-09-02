@@ -12,7 +12,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.ParameterMode;
 import javax.persistence.Persistence;
+import javax.persistence.StoredProcedureQuery;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -240,6 +242,28 @@ public class CompraJpaController implements Serializable {
             return query.getSingleResult();
         } finally {
             em.close();
+        }
+    }
+
+    public void ajusteIncrementoInventarioProductos(String idFacturaCompra) {
+          EntityManager em = getEntityManager();
+
+        try {
+
+            StoredProcedureQuery query = em.createStoredProcedureQuery("sp_incrementar_inventario");
+            query.registerStoredProcedureParameter("id_factura", String.class, ParameterMode.IN);
+            query.setParameter("id_factura", idFacturaCompra);
+            query.execute();
+            em.clear();
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
         }
     }
 
