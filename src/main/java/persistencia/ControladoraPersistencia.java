@@ -45,7 +45,7 @@ public class ControladoraPersistencia {
         ventaJpaController = new VentaJpaController();
         ventaDetalladaJpaController = new VentaDetalladaJpaController();
         compraJpaController = new CompraJpaController();
-        compraDetalladaJpaController= new CompraDetalladaJpaController();
+        compraDetalladaJpaController = new CompraDetalladaJpaController();
     }
 
     public long contarVenta(String cliente, String fecha) {
@@ -75,14 +75,8 @@ public class ControladoraPersistencia {
         }
     }
 
-    public void eliminarCategoria(int idCategoria) {
-        try {
-            categoriaJpaController.destroy(idCategoria);
-        } catch (IllegalOrphanException ex) {
-            Logger.getLogger(ControladoraPersistencia.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (NonexistentEntityException ex) {
-            Logger.getLogger(ControladoraPersistencia.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    public void eliminarCategoria(int idCategoria) throws IllegalOrphanException, NonexistentEntityException {
+        categoriaJpaController.destroy(idCategoria);
     }
 
     //-------------------------------Persistencia de Proveedor--------------------------------
@@ -123,7 +117,7 @@ public class ControladoraPersistencia {
     }
 
     public List<Producto> listarProductosPorProveedor(int idProveedor) {
-     return productoJpaController.listarProductosPorProveedor(idProveedor);
+        return productoJpaController.listarProductosPorProveedor(idProveedor);
     }
 
     //---------------------------- Persistencia de Clientes-------------------------------------------
@@ -176,11 +170,11 @@ public class ControladoraPersistencia {
     }
 
     public long contarCompras(String proveedor, String fecha) {
-      return compraJpaController.contarComprasFiltradas(proveedor, fecha);
+        return compraJpaController.contarComprasFiltradas(proveedor, fecha);
     }
 
     public List<Compra> listarCompras() {
-       return compraJpaController.findCompraEntities();
+        return compraJpaController.findCompraEntities();
     }
 
     public void guardarDetalleCompra(CompraDetallada compraDetallada) {

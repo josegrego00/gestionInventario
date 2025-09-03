@@ -34,6 +34,7 @@ import logica.Producto;
 import logica.Proveedor;
 import persistencia.ControladoraPersistencia;
 import persistencia.exceptions.IllegalOrphanException;
+import persistencia.exceptions.NonexistentEntityException;
 
 /**
  *
@@ -336,7 +337,7 @@ public class ControladoraLogica {
         }
     }
 
-    public void eliminarCategoria(String idCategoria) {
+    public void eliminarCategoria(String idCategoria)throws IllegalOrphanException, NonexistentEntityException  {
 
         controladoraPersistencia.eliminarCategoria(Integer.parseInt(idCategoria));
 
