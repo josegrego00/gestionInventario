@@ -711,7 +711,7 @@ public class ControladoraLogica {
         }
 
         // 3. Validar descripción
-        if (!validarTexto(descripcionCompra) || contieneScriptMalicioso(descripcionCompra)) {
+        if (contieneScriptMalicioso(descripcionCompra)) {
             throw new Exception("Descripción inválida.");
         }
 
@@ -721,6 +721,11 @@ public class ControladoraLogica {
         }
 
         Proveedor proveedor = buscarProveedorPorId(idProv);
+
+        if (validarFacturaConProvedor(proveedor, numeroFactura)) {
+            throw new Exception("Factura ya existe para este Proveedor, Ojo");
+        }
+
         Compra compra = new Compra();
         compra.setNFactura(numeroFactura);
         compra.setIdProveedor(proveedor);
@@ -729,8 +734,10 @@ public class ControladoraLogica {
         compra.setTotalCompra(BigDecimal.valueOf(totalCompra));
         compra.setFechaCompra(fechaHora);
         compra.setEstadoCompra(estado);
+
         controladoraPersistencia.crearCompra(compra);
         return compra.getNFactura();
+
     }
 
     public boolean validadMontoCompra(Double totalCompra) {
@@ -768,10 +775,6 @@ public class ControladoraLogica {
             Compra compra = buscarCompraPorId(idCompra);
 
             for (DetalleCompraDTO item : detalles) {
-                System.out.println("DEBUG >>> Producto: " + item.getProductoCodigo()
-                        + " | Cantidad: " + item.getCantidadComprada()
-                        + " | Precio: " + item.getPrecioProductoComprado());
-                System.out.println("DEBUG JSON >>> " + detalleJson);
 
                 CompraDetallada compraDetallada = new CompraDetallada();
 
@@ -810,6 +813,10 @@ public class ControladoraLogica {
     }
 
     public void ajusteIncrementoInventarioProductos(String idFacturaCompra) {
-       controladoraPersistencia.ajusteIncrementoInventarioProductos(idFacturaCompra);
+        controladoraPersistencia.ajusteIncrementoInventarioProductos(idFacturaCompra);
+    }
+
+    private boolean validarFacturaConProvedor(Proveedor proveedor, String numeroFactura) {
+        return controladoraPersistencia.validarFacturaConProvedor(proveedor, numeroFactura);
     }
 }

@@ -191,4 +191,8 @@ public class ControladoraPersistencia {
         compraJpaController.ajusteIncrementoInventarioProductos(idFacturaCompra);
     }
 
+    public boolean validarFacturaConProvedor(Proveedor proveedor, String numeroFactura) {
+        return compraJpaController.existeFacturaParaProveedor(proveedor.getId(), numeroFactura);
+    }
+
 }

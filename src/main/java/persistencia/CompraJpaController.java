@@ -246,7 +246,7 @@ public class CompraJpaController implements Serializable {
     }
 
     public void ajusteIncrementoInventarioProductos(String idFacturaCompra) {
-          EntityManager em = getEntityManager();
+        EntityManager em = getEntityManager();
 
         try {
 
@@ -265,6 +265,18 @@ public class CompraJpaController implements Serializable {
                 em.close();
             }
         }
+    }
+
+    public boolean existeFacturaParaProveedor(Integer idProveedor, String numeroFactura) {
+        EntityManager em = getEntityManager();
+        Query query = em.createQuery(
+                "SELECT COUNT(c) FROM Compra c WHERE c.idProveedor.id = :idProveedor AND c.nFactura = :nFactura"
+        );
+        query.setParameter("idProveedor", idProveedor);
+        query.setParameter("nFactura", numeroFactura);
+
+        Long count = (Long) query.getSingleResult();
+        return count > 0;
     }
 
 }

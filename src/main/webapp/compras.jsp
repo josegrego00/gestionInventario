@@ -16,12 +16,12 @@
         <jsp:include page="index.jsp" />
 
         <%-- Mensaje de éxito --%>
-        <% if (session.getAttribute("mensaje") != null) {%>
+        <% if (session.getAttribute("mensajeExito") != null) {%>
         <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <%= session.getAttribute("mensaje")%>
+            <%= session.getAttribute("mensajeExito")%>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
-        <% session.removeAttribute("mensaje"); %>
+        <% session.removeAttribute("mensajeExito"); %>
         <% }%>
 
         <div class="container mt-4">
