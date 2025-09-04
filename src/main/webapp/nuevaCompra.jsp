@@ -169,8 +169,8 @@
 
                 <!-- ===================== BOTONES ===================== -->
                 <div class="d-flex justify-content-between mt-4">
-                    <button type="submit" class="btn btn-success">Guardar Compra</button>
-                    <a href="SVListarComprasReportes" class="btn btn-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-success" onclick="return confirmarVenta()">Guardar Compra</button>
+                    <a href="SVListarComprasReportes" class="btn btn-secondary" onclick="return confirmarCancelar()">Cancelar</a>
                 </div>
 
             </form>
@@ -185,6 +185,7 @@
 
             // Agregar producto a la tabla y al array con UID único
             function agregarProductoCompra() {
+                mostrarCamposPagoCompra();
                 const select = document.getElementById("productoSelect");
                 const cantidad = parseInt(document.getElementById("cantidadInput").value);
                 const opcion = select.options[select.selectedIndex];
@@ -217,6 +218,7 @@
                 botonEliminar.className = "btn btn-danger btn-sm";
                 botonEliminar.type = "button";
                 botonEliminar.onclick = function () {
+                    mostrarCamposPagoCompra();
                     const uidFila = fila.dataset.uid;
                     const index = detalleCompra.findIndex(item => item.uid === uidFila);
                     if (index > -1)
@@ -313,6 +315,9 @@
                 const efectivo = document.getElementById("grupoMontoEfectivo");
                 const transferencia = document.getElementById("grupoMontoTransferencia");
                 const grupoCambio = document.getElementById("grupoCambio");
+                document.getElementById("montoEfectivo").value = "";
+                document.getElementById("montoTransferencia").value = "";
+                document.getElementById("cambioCompra").value = "";
                 efectivo.style.display = "none";
                 transferencia.style.display = "none";
                 grupoCambio.style.display = "none";
@@ -330,6 +335,7 @@
                     grupoCambio.style.display = "block";
                     document.getElementById("labelCambio").textContent = "Vuelto / Diferencia: $";
                 }
+
             }
 
             function calcularCambioCompra() {
@@ -386,6 +392,13 @@
                 form.submit();
                 // Luego, cuando guardes, el action vuelve a ser SVRegistrarCompraDetalle (definido en el JSP)
             }
+            function confirmarVenta() {
+                return confirm("¿Desea Confirmar la Compra?");
+            }
+            function confirmarCancelar() {
+                return confirm("¿Desea Salir de la Factura de Compra?, se Perdera Todo");
+            }
+
         </script>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

@@ -6,7 +6,11 @@ show procedure status where db ='gestion_inventario_venta';
 show databases;
 show tables;
 describe venta_detallada;
-describe producto;
+describe compra;
+
+alter table compra 
+modify column n_factura varchar(300) not null;
+
 
 set SQL_SAFE_UPDATES=0;
 update venta 
@@ -17,12 +21,15 @@ id int primary key auto_increment,
 dniCliente varchar(20) not null unique,
 nombre_cliente varchar(200) not null
 );
-describe compra_detallada;
+describe compra;
 Select * from venta_detallada;
 
 Select * from compra_detallada;
 Select * from compra;
 Select * from cliente;
+Select * from producto;
+SHOW CREATE TABLE compra_detallada;
+
 
 alter table compra 
 modify column estado_compra boolean not null;
