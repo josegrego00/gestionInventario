@@ -28,9 +28,9 @@ public class CompraDetalladaJpaController implements Serializable {
     }
 
     public CompraDetalladaJpaController() {
-    this.emf=Persistence.createEntityManagerFactory("gestionPU");
+        this.emf = Persistence.createEntityManagerFactory("gestionPU");
     }
-    
+
     private EntityManagerFactory emf = null;
 
     public EntityManager getEntityManager() {
@@ -169,5 +169,28 @@ public class CompraDetalladaJpaController implements Serializable {
             em.close();
         }
     }
-    
+
+    public void eliminarDetallesPorFactura(String nFactura) {
+        EntityManager em = getEntityManager();
+        try {
+            em.getTransaction().begin();
+
+            // Borra todos los detalles asociados a la factura
+            em.createQuery("DELETE FROM CompraDetallada cd WHERE cd.nFactura.nFactura = :nFactura")
+                    .setParameter("nFactura", nFactura)
+                    .executeUpdate();
+
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            e.printStackTrace();
+        } finally {
+            if (em != null) {
+                em.close();
+            }
+        }
+    }
+
 }

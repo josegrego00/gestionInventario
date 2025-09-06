@@ -12,6 +12,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.NoResultException;
 import javax.persistence.ParameterMode;
 import javax.persistence.Persistence;
 import javax.persistence.StoredProcedureQuery;
@@ -269,14 +270,51 @@ public class CompraJpaController implements Serializable {
 
     public boolean existeFacturaParaProveedor(Integer idProveedor, String numeroFactura) {
         EntityManager em = getEntityManager();
-        Query query = em.createQuery(
-                "SELECT COUNT(c) FROM Compra c WHERE c.idProveedor.id = :idProveedor AND c.nFactura = :nFactura"
-        );
+        Query query = em.createQuery("SELECT COUNT(c) FROM Compra c WHERE c.idProveedor.id = :idProveedor AND c.nFactura = :nFactura AND c.estadoCompra = true");
         query.setParameter("idProveedor", idProveedor);
         query.setParameter("nFactura", numeroFactura);
 
         Long count = (Long) query.getSingleResult();
         return count > 0;
+    }
+
+    public void ajusteDescontarInventarioProductosPorAnularCompraSP(String nFactura) {
+        EntityManager em = getEntityManager();
+
+        try {
+
+            StoredProcedureQuery query = em.createStoredProcedureQuery("sp_revertir_inventario");
+            query.registerStoredProcedureParameter("id_factura", String.class, ParameterMode.IN);
+            query.setParameter("id_factura", nFactura);
+            query.execute();
+            em.clear();
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    public Compra buscarCompraActivaPorNumeroFactura(String nFactura) {
+        EntityManager em = getEntityManager();
+        try {
+            return em.createQuery(
+                    "SELECT c FROM Compra c WHERE c.nFactura = :nFactura AND c.estadoCompra = true ORDER BY c.id DESC",
+                    Compra.class
+            )
+                    .setParameter("nFactura", nFactura)
+                    .setMaxResults(1) // solo la última activa
+                    .getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        } finally {
+            em.close();
+        }
     }
 
 }

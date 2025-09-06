@@ -68,6 +68,7 @@
                             <td>
                                 <a href="SVEditarProductoConCodigoBarra?codigoBarra=<%= producto.getCodigoBarra() %>" class="btn btn-warning btn-sm" op>Editar</a>
                                 <a href="SVEliminarProducto?codigoBarra=<%= producto.getCodigoBarra()%>" class="btn btn-danger btn-sm" onclick="return confirmarCancelacion()">Eliminar</a>
+                                <a href="#" class="btn btn-success btn-sm" onclick="#">Liquidar</a>
                             </td>
                         </tr>
                         <%

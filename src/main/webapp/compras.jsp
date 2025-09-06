@@ -64,7 +64,7 @@
                             for (Compra compra : listaCompras) {
                     %>
                     <tr>
-                        <td><%= compra.getNFactura() %></td>
+                        <td><%= compra.getNFactura()%></td>
                         <td>
                             <%
                                 String fechaOriginal = compra.getFechaCompra().toString();
@@ -83,7 +83,7 @@
                             <a href="SVGenerarFacturaPDF?idFactura=<%= compra.getId()%>" 
                                class="btn btn-warning btn-sm">Generar PDF</a>
                             <form action="SVAnularCompra" method="POST" style="display:inline;">
-                                <input type="hidden" name="idFactura" value="<%= compra.getId()%>">
+                                <input type="hidden" name="idFactura" value="<%= compra.getNFactura()%>">
                                 <button type="submit" class="btn btn-danger btn-sm" 
                                         onclick="return confirmarCancelacion()">Anular</button>
                             </form>
@@ -142,8 +142,9 @@
         </div>
 
         <script>
+
             function confirmarCancelacion() {
-                return confirm("¿Está seguro que desea anular esta factura?");
+                return confirm("¿Está seguro que desea anular esta Compra?");
             }
         </script>
     </body>

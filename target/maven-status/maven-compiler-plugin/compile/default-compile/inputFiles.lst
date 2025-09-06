@@ -32,6 +32,7 @@
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/logica/DetalleCompraDTO.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/persistencia/CompraDetalladaJpaController.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/persistencia/VentaJpaController.java
+/home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/servlets/SVAnularCompra.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/servlets/SVEditarCategoriasPorCodigo.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/persistencia/VentaDetalladaJpaController.java
 /home/josepino/NetBeansProjects/GestionInventarioVenta/src/main/java/logica/CompraDetallada.java

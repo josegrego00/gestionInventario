@@ -108,6 +108,10 @@ public class ControladoraPersistencia {
         }
     }
 
+    public void ajusteIncrementoInventarioProductos(String idFacturaCompra) {
+        compraJpaController.ajusteIncrementoInventarioProductos(idFacturaCompra);
+    }
+
     public void eliminarProducto(Integer id) throws IllegalOrphanException, NonexistentEntityException, Exception {
         productoJpaController.destroy(id);
     }
@@ -118,6 +122,10 @@ public class ControladoraPersistencia {
 
     public List<Producto> listarProductosPorProveedor(int idProveedor) {
         return productoJpaController.listarProductosPorProveedor(idProveedor);
+    }
+
+    public boolean validarFacturaConProvedor(Proveedor proveedor, String numeroFactura) {
+        return compraJpaController.existeFacturaParaProveedor(proveedor.getId(), numeroFactura);
     }
 
     //---------------------------- Persistencia de Clientes-------------------------------------------
@@ -181,12 +189,24 @@ public class ControladoraPersistencia {
         compraDetalladaJpaController.create(compraDetallada);
     }
 
-    public void ajusteIncrementoInventarioProductos(String idFacturaCompra) {
-        compraJpaController.ajusteIncrementoInventarioProductos(idFacturaCompra);
+    public void ajusteDescontarInventarioProductosPorAnularCompra(String nFactura) {
+        compraJpaController.ajusteDescontarInventarioProductosPorAnularCompraSP(nFactura);
     }
 
-    public boolean validarFacturaConProvedor(Proveedor proveedor, String numeroFactura) {
-        return compraJpaController.existeFacturaParaProveedor(proveedor.getId(), numeroFactura);
+    public Compra buscarCompraActivaPorNumeroFactura(String idFactura) {
+        return compraJpaController.buscarCompraActivaPorNumeroFactura(idFactura);
+    }
+
+    public void anularFacturaCompra(Compra facturaCompra) {
+        try {
+            compraJpaController.destroy(facturaCompra.getId());
+        } catch (NonexistentEntityException ex) {
+            Logger.getLogger(ControladoraPersistencia.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void anularDetalleFacturaCompra(Compra facturaCompra) {
+        compraDetalladaJpaController.eliminarDetallesPorFactura(facturaCompra.getNFactura());
     }
 
 }

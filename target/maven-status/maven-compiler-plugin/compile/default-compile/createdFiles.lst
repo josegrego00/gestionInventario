@@ -43,6 +43,7 @@ logica/ControladoraLogica$2.class
 persistencia/ProductoJpaController.class
 logica/Venta_.class
 logica/Categoria.class
+servlets/SVAnularCompra.class
 logica/Cliente_.class
 servlets/SVListarProductos.class
 logica/Venta.class

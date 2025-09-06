@@ -7,9 +7,23 @@ show databases;
 show tables;
 describe venta_detallada;
 describe compra;
+show create table compra;
 
+
+
+select * from producto;
 alter table compra 
 modify column n_factura varchar(300) not null;
+
+INSERT INTO compra_detallada (n_factura, id_producto, cantidad_comprada, precio_producto_comprado)
+VALUES ('sa-132', 2000, 10, 1000);
+
+INSERT INTO compra_detallada (n_factura, id_producto, cantidad_comprada, precio_producto_comprado)
+VALUES ('sa-132', 2000, 10, 900);
+
+show index from compra;
+ALTER TABLE compra DROP INDEX idx_factura_proveedor;
+
 
 
 set SQL_SAFE_UPDATES=0;
@@ -173,9 +187,44 @@ BEGIN
     START TRANSACTION;
 
     UPDATE producto p
-    JOIN compra_detallada cd ON p.id = cd.id_producto
-    SET p.inventario = p.inventario + cd.cantidad_comprada
-    WHERE cd.n_factura = id_factura;
+    JOIN (
+        SELECT id_producto, SUM(cantidad_comprada) AS total_cantidad
+        FROM compra_detallada
+        WHERE n_factura = id_factura
+        GROUP BY id_producto
+    ) cd ON p.id = cd.id_producto
+    SET p.inventario = p.inventario + cd.total_cantidad;
+
+    -- Confirma cambios
+    COMMIT;
+END;
+$$
+DELIMITER ;
+
+
+DELIMITER $$
+CREATE PROCEDURE sp_revertir_inventario(
+     IN id_factura VARCHAR(300)
+)
+BEGIN
+    -- Manejador de errores: si algo falla, hace rollback
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    -- Inicia la transacción
+    START TRANSACTION;
+
+    -- Restar del inventario las cantidades de la factura anulada
+    UPDATE producto p
+    JOIN (
+        SELECT id_producto, SUM(cantidad_comprada) AS total_cantidad
+        FROM compra_detallada
+        WHERE n_factura = id_factura
+        GROUP BY id_producto
+    ) cd ON p.id = cd.id_producto
+    SET p.inventario = p.inventario - cd.total_cantidad;
 
     -- Confirma cambios
     COMMIT;

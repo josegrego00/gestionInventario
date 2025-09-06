@@ -337,7 +337,7 @@ public class ControladoraLogica {
         }
     }
 
-    public void eliminarCategoria(String idCategoria)throws IllegalOrphanException, NonexistentEntityException  {
+    public void eliminarCategoria(String idCategoria) throws IllegalOrphanException, NonexistentEntityException {
 
         controladoraPersistencia.eliminarCategoria(Integer.parseInt(idCategoria));
 
@@ -357,6 +357,10 @@ public class ControladoraLogica {
 
     public List<Proveedor> listarProveedor() {
         return controladoraPersistencia.listarProveedor();
+    }
+
+    private boolean validarFacturaConProvedor(Proveedor proveedor, String numeroFactura) {
+        return controladoraPersistencia.validarFacturaConProvedor(proveedor, numeroFactura);
     }
 
     //-------------------------------- Logica de Clientes------------------------------------------
@@ -591,6 +595,10 @@ public class ControladoraLogica {
 
     }
 
+    public void ajusteIncrementoInventarioProductos(String idFacturaCompra) {
+        controladoraPersistencia.ajusteIncrementoInventarioProductos(idFacturaCompra);
+    }
+
     private void addClientInfo(Document document, Venta factura) {
         // Datos del cliente (puedes obtenerlos de request.getParameter())
         float[] columnWidths = {2, 5};
@@ -787,15 +795,9 @@ public class ControladoraLogica {
                 compraDetallada.setIdProducto(producto);
                 compraDetallada.setCantidadComprada(item.getCantidadComprada());
                 compraDetallada.setPrecioProductoComprado(item.getPrecioProductoComprado());
-
                 // Guardar detalle de la compra
                 controladoraPersistencia.guardarDetalleCompra(compraDetallada);
 
-                /*                // Aumentar stock del producto
-                BigDecimal stockActual = producto.getStock() != null ? producto.getStock() : BigDecimal.ZERO;
-                BigDecimal nuevoStock = stockActual.add(item.getCantidadComprada());
-                producto.setStock(nuevoStock);
-                controladoraPersistencia.editarProducto(producto);*/
             }
 
         } catch (Exception e) {
@@ -806,18 +808,25 @@ public class ControladoraLogica {
     private Compra buscarCompraPorId(String idCompra) {
         List<Compra> listaCompras = controladoraPersistencia.listarCompras();
         for (Compra compras : listaCompras) {
-            if (compras.getNFactura().equals(idCompra)) {
+            if (compras.getNFactura().equals(idCompra) && compras.getEstadoCompra() == true) {
                 return compras;
             }
         }
         return null;
     }
 
-    public void ajusteIncrementoInventarioProductos(String idFacturaCompra) {
-        controladoraPersistencia.ajusteIncrementoInventarioProductos(idFacturaCompra);
+    public boolean anularFacturaCompra(String idFactura) {
+        Compra facturaCompra = controladoraPersistencia.buscarCompraActivaPorNumeroFactura(idFactura);
+        if (facturaCompra != null) {
+            facturaCompra.setEstadoCompra(false);
+           
+            controladoraPersistencia.ajusteDescontarInventarioProductosPorAnularCompra(facturaCompra.getNFactura());
+            controladoraPersistencia.anularDetalleFacturaCompra(facturaCompra);
+            controladoraPersistencia.anularFacturaCompra(facturaCompra);
+
+            return true;
+        }
+        return false;
     }
 
-    private boolean validarFacturaConProvedor(Proveedor proveedor, String numeroFactura) {
-        return controladoraPersistencia.validarFacturaConProvedor(proveedor, numeroFactura);
-    }
 }
